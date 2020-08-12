@@ -1,12 +1,8 @@
 import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Webcam from 'react-webcam';
+import QrReader from 'react-qr-reader';
 
-import QrScanner from 'qr-scanner';
-import WorkerPath from '!!file-loader!../../node_modules/qr-scanner/qr-scanner-worker.min.js';
-QrScanner.WORKER_PATH = WorkerPath;
-console.log(QrScanner.WORKER_PATH);
 class App extends Component{
   constructor(props){
     super();
@@ -14,24 +10,41 @@ class App extends Component{
     this.setVideoElementRef = element => {
       this.videoReference = element;
     }
+    this.state = {
+      qrResult:null
+    }
   }
 
   componentDidMount(){
-    const video = this.videoReference.video;
-    console.log(this.videoReference);
-    const scanner = new QrScanner(video, function(result){
-      console.log(result);
-    })
 
   }
+
   render(){
+    const self = this;
+    let header = (<h2>Test</h2>);
+    if(this.state.qrResult){
+    header = <h2>{this.state.qrResult}</h2>
+    }
     return (
       <div className="App">
         <header className="App-header">
           <h1>Welcome to The Establishments Arms</h1>
           <p>Help us aid the track and trace effort by showing this kiosc the barcode provided by the Traci app</p>
-          <Webcam width={320} height={240} style={{borderRadius:4}} ref={this.setVideoElementRef}/>
+          <QrReader
+          delay={50}
+          onError={function(error){
+          }}
+          onScan={function(data){
+            if(data){
+              self.setState({qrResult:data});
+            }
+          }}
+          style={{
+            width:300,
+            margin:'0px auto'}}
+            resolution={600}/>
         </header>
+        {header}
       </div>
     );
   }
