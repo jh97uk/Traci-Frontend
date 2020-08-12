@@ -2,6 +2,10 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import QrReader from 'react-qr-reader';
+import UIfx from 'uifx';
+import successBeep from './success.mp3';
+
+const beep = new UIfx(successBeep);
 
 class App extends Component{
   constructor(props){
@@ -13,10 +17,19 @@ class App extends Component{
     this.state = {
       qrResult:null
     }
+
+    this.onCodeScanned = this.onCodeScanned.bind(this);
   }
 
   componentDidMount(){
 
+  }
+  
+  onCodeScanned(code){
+    if(code && code != this.state.qrResult){
+      beep.play()
+      this.setState({qrResult:code});
+    }
   }
 
   render(){
@@ -25,6 +38,7 @@ class App extends Component{
     if(this.state.qrResult){
     header = <h2>{this.state.qrResult}</h2>
     }
+
     return (
       <div className="App">
         <header className="App-header">
@@ -34,11 +48,7 @@ class App extends Component{
           delay={50}
           onError={function(error){
           }}
-          onScan={function(data){
-            if(data){
-              self.setState({qrResult:data});
-            }
-          }}
+          onScan={this.onCodeScanned}
           style={{
             width:300,
             margin:'0px auto'}}
