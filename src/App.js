@@ -28,6 +28,11 @@ class App extends Component{
   onCodeScanned(code){
     if(code && code != this.state.qrResult){
       beep.play()
+      fetch('http://localhost:4000/customer/entry', {
+        method:'POST',
+        headers:{'Content-Type': 'application/json'},
+        body:JSON.stringify({number:code})
+      })
       this.setState({qrResult:code});
     }
   }
@@ -36,7 +41,7 @@ class App extends Component{
     const self = this;
     let header = (<h2>Test</h2>);
     if(this.state.qrResult){
-    header = <h2>{this.state.qrResult}</h2>
+      header = <h2>{this.state.qrResult}</h2>
     }
 
     return (
@@ -51,7 +56,8 @@ class App extends Component{
           onScan={this.onCodeScanned}
           style={{
             width:300,
-            margin:'0px auto'}}
+            margin:'0px auto'
+          }}
             resolution={600}/>
         </header>
         {header}
