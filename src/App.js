@@ -15,9 +15,9 @@ class App extends Component{
       this.videoReference = element;
     }
     this.state = {
-      qrResult:null
+      qrResult:null,
+      lastScanTimestamp:null
     }
-
     this.onCodeScanned = this.onCodeScanned.bind(this);
   }
 
@@ -26,14 +26,14 @@ class App extends Component{
   }
   
   onCodeScanned(code){
-    if(code && code != this.state.qrResult){
+    if(code && code != this.state.qrResult || (code && this.state.qrResult == code && this.state.lastScanTimestamp+(1000*30) <= new Date().getTime()) ){
       beep.play()
       fetch('http://localhost:4000/customer/entry', {
         method:'POST',
         headers:{'Content-Type': 'application/json'},
         body:JSON.stringify({number:code})
       })
-      this.setState({qrResult:code});
+      this.setState({qrResult:code, lastScanTimestamp:new Date().getTime()});
     }
   }
 
