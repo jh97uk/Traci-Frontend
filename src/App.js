@@ -18,7 +18,7 @@ class App extends Component{
     }
     this.state = {
       qrResult:null,
-      lastScanTimestamp:null
+      lastScanTimestamp:null,
     }
     this.onCodeScanned = this.onCodeScanned.bind(this);
     this.setRef = this.setRef.bind(this);
@@ -34,14 +34,18 @@ class App extends Component{
   }
   
   onCodeScanned(code){
+    var self = this;
     if(code && code != this.state.qrResult || (code && this.state.qrResult == code && this.state.lastScanTimestamp+(1000*30) <= new Date().getTime()) ){
       beep.play()
       fetch('http://localhost:4000/customer/entry', {
         method:'POST',
         headers:{'Content-Type': 'application/json'},
         body:JSON.stringify({number:code})
+      }).then(function(response){
+        return response.json();
+      }).then(function(data){
+        self.setState({qrResult:code, lastScanTimestamp:new Date().getTime(), scanned:true, scanType:data.type});
       })
-      this.setState({qrResult:code, lastScanTimestamp:new Date().getTime(), scanned:true});
     }
   }
 
@@ -72,7 +76,11 @@ class App extends Component{
             </div>
             ) : (
             <div>
-              <p>Thanks for your cooperation. Enjoy your stay!</p>
+              {this.state.scanType == 'entry' ? (
+                <p>Thanks for your cooperation. Enjoy your stay!</p>
+              ) : (
+                <p>Thanks for your custom. Enjoy your day!</p>
+              )}
               <Checkmark onAnimationComplete={function(){
                 setTimeout(function(){
                   self.setState({scanned:false})
