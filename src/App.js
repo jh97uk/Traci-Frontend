@@ -4,6 +4,8 @@ import './App.css';
 import QrReader from 'react-qr-reader';
 import UIfx from 'uifx';
 import successBeep from './success.mp3';
+import Checkmark from './Checkmark.js';
+
 
 const beep = new UIfx(successBeep);
 
@@ -19,10 +21,16 @@ class App extends Component{
       lastScanTimestamp:null
     }
     this.onCodeScanned = this.onCodeScanned.bind(this);
+    this.setRef = this.setRef.bind(this);
+  }
+
+  setRef(input){
+    this.childRef = input;
+    console.log(input);
   }
 
   componentDidMount(){
-
+    console.log(this.childRef);
   }
   
   onCodeScanned(code){
@@ -33,7 +41,7 @@ class App extends Component{
         headers:{'Content-Type': 'application/json'},
         body:JSON.stringify({number:code})
       })
-      this.setState({qrResult:code, lastScanTimestamp:new Date().getTime()});
+      this.setState({qrResult:code, lastScanTimestamp:new Date().getTime(), scanned:true});
     }
   }
 
@@ -48,17 +56,30 @@ class App extends Component{
       <div className="App">
         <header className="App-header">
           <h1>Welcome to The Establishments Arms</h1>
-          <p>Help us aid the track and trace effort by showing this kiosc the barcode provided by the Traci app</p>
-          <QrReader
-          delay={50}
-          onError={function(error){
-          }}
-          onScan={this.onCodeScanned}
-          style={{
-            width:300,
-            margin:'0px auto'
-          }}
-            resolution={600}/>
+          {!this.state.scanned ? (
+            <div>
+              <p>Help us aid the track and trace effort by showing this kiosc the barcode provided by the Traci app</p>
+              <QrReader
+                delay={50}
+                onError={function(error){
+                }}
+                onScan={this.onCodeScanned}
+                style={{
+                  width:300,
+                  margin:'0px auto'
+                }}
+                resolution={600}/>
+            </div>
+            ) : (
+            <div>
+              <p>Thanks for your cooperation. Enjoy your stay!</p>
+              <Checkmark onAnimationComplete={function(){
+                setTimeout(function(){
+                  self.setState({scanned:false})
+                }, 2000)}
+              }/>
+            </div>
+          )}
         </header>
         {header}
       </div>
