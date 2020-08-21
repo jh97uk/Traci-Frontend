@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import './App.css';
 import Kiosk from './Views/Kiosk.js';
+import Login from './Views/Login.js';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,6 +20,7 @@ class App extends Component{
       <div className="appContainer">
         <Router>
           <Switch>
+            <Route path="/login" render={(props)=><Login {...props}/>}/>
             <Route path="/" render={(props)=><Kiosk {...props}/>}/>
           </Switch>
         </Router>
