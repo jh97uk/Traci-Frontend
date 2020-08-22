@@ -33,11 +33,15 @@ class Kiosc extends Component{
   
   onCodeScanned(code){
     var self = this;
+    var token = localStorage.getItem('token');
     if(code && code != this.state.qrResult || (code && this.state.qrResult == code && this.state.lastScanTimestamp+(1000*30) <= new Date().getTime()) ){
       beep.play()
       fetch('http://localhost:4000/customer/entry', {
         method:'POST',
-        headers:{'Content-Type': 'application/json'},
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+token
+        },
         body:JSON.stringify({number:code})
       }).then(function(response){
         return response.json();
