@@ -44,7 +44,7 @@ class Login extends Component{
         
         return(
             <Grid container direction="row" justify="center" alignItem="center" style={{marginTop:150}}>
-                <Grid item xs={5}>
+                <Grid item xs={8} sm={6} md={5} lg={3}>
                     <Paper style={{padding:0, paddingBottom:10}}>
                         <Paper style={{width:'100%', paddingTop:5, paddingBottom:5, backgroundColor:this.props.theme.palette.primary.main, borderTopLeftRadius:4 , borderTopRightRadius:4}} elevation={1} square>
                             <Typography align='center' variant='h6' style={{color:'white'}}>Login</Typography>
