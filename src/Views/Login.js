@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import '../sb-admin-2.css';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import { withTheme } from '@material-ui/core/styles';
+import { deepPurple } from '@material-ui/core/colors';
+
+import { Typography } from '@material-ui/core';
 
 class Login extends Component{
     constructor(props){
@@ -34,37 +41,41 @@ class Login extends Component{
     }
     
     render(){
+        
         return(
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-xl-5 col-lg-6 col-md-7">
-                        <div className="card border-0 shadow-lg my-5">
-                            <div className="card-body p-0">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="p-5">
-                                            <div className="text-center">
-                                                <h1 className="h4 text-gray-900 mb-4">Login</h1>
-                                            </div>
-                                            <form className="user">
-                                                <div className="form-group">
-                                                    <input type="email" className="form-control form-control-user" id="exampleInputEmail" placeholder="Enter Email Address..." onChange={event=>this.setState({emailAddress:event.target.value})}/>
-                                                </div>
-                                                <div className="form-group">
-                                                    <input type="password" className="form-control form-control-user" id="exampleInputPassword" placeholder="Password" onChange={event=>this.setState({password:event.target.value})}/>
-                                                </div>
-                                            </form>
-                                            <button className="btn btn-primary btn-user btn-block" onClick={this.loginPressed}>Login</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Grid container direction="row" justify="center" alignItem="center" style={{marginTop:150}}>
+                <Grid item xs={5}>
+                    <Paper style={{padding:0, paddingBottom:10}}>
+                        <Paper style={{width:'100%', paddingTop:5, paddingBottom:5, backgroundColor:this.props.theme.palette.primary.main, borderTopLeftRadius:4 , borderTopRightRadius:4}} elevation={1} square>
+                            <Typography align='center' variant='h6' style={{color:'white'}}>Login</Typography>
+                        </Paper>
+                        <Grid container direction="row" justify="center" alignItem="center" spacing={2} style={{paddingTop:10}}>
+                            <Grid item xs={10}>
+                                <TextField 
+                                    label="Username"
+                                    type="text"
+                                    autoComplete="current-password"
+                                    variant="standard" style={{width:'100%'}}/>
+                            </Grid>
+                            <Grid item xs={10}>
+                                <TextField 
+                                    label="Password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    variant="standard" style={{width:'100%'}}/>
+                            </Grid>
+                            <Grid item xs={10}>
+                                <Button variant="contained" color="primary" style={{width:"100%"}}>
+                                    Login
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Paper>    
+                </Grid>
+                
+            </Grid>
         )
     }
 }
 
-export default Login;
+export default withTheme(Login);
