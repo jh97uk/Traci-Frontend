@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { withTheme } from '@material-ui/core/styles';
-import { deepPurple } from '@material-ui/core/colors';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { Typography } from '@material-ui/core';
 
@@ -20,6 +20,7 @@ class Login extends Component{
 
     loginPressed(){
         const self = this;
+        self.setState({logginInProgress:true})
         fetch('http://localhost:4000/users/authenticate', {
           method:'POST',
           headers:{'Content-Type':'application/json'},
@@ -31,10 +32,10 @@ class Login extends Component{
             }
             return response.json();
         }).then(function(data){
+            self.setState({logginInProgress:false})
             if(data.status == 500){
                 
             } else{
-                console.log("logged in!");
                 localStorage.setItem('token', data.token);
             }
         });
@@ -55,19 +56,40 @@ class Login extends Component{
                                     label="Username"
                                     type="text"
                                     autoComplete="current-password"
-                                    variant="standard" style={{width:'100%'}}/>
+                                    variant="standard" style={{width:'100%'}}
+                                    onChange={event=>this.setState({username:event.target.value})}/>
                             </Grid>
                             <Grid item xs={10}>
                                 <TextField 
                                     label="Password"
                                     type="password"
                                     autoComplete="current-password"
-                                    variant="standard" style={{width:'100%'}}/>
+                                    variant="standard" 
+                                    style={{width:'100%'}}
+                                    onChange={event=>this.setState({password:event.target.value})}/>
                             </Grid>
                             <Grid item xs={10}>
-                                <Button variant="contained" color="primary" style={{width:"100%"}}>
+                                <Button 
+                                    variant="contained" 
+                                    color="secondary" 
+                                    style={{width:"100%"}}
+                                    onClick={this.loginPressed}
+                                    disabled={this.state.logginInProgress}>
                                     Login
+                                    {
+                                        this.state.logginInProgress &&
+                                        <CircularProgress 
+                                        size={24}
+                                        style={{
+                                            position:'absolute',
+                                            top:'50%',
+                                            left: '50%',
+                                            marginTop: -12,
+                                            marginLeft: -12
+                                        }}/>
+                                    }
                                 </Button>
+                                
                             </Grid>
                         </Grid>
                     </Paper>    
