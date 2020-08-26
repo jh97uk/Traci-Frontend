@@ -5,8 +5,12 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { withTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import { Typography } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 class Login extends Component{
     constructor(props){
@@ -20,7 +24,7 @@ class Login extends Component{
 
     loginPressed(){
         const self = this;
-        self.setState({logginInProgress:true})
+        self.setState({loginInProgress:true})
         fetch('http://localhost:4000/users/authenticate', {
           method:'POST',
           headers:{'Content-Type':'application/json'},
@@ -32,11 +36,18 @@ class Login extends Component{
             }
             return response.json();
         }).then(function(data){
-            self.setState({logginInProgress:false})
+            
             if(data.status == 500){
-                
+                self.setState({
+                    loginInProgress:false, 
+                    showDialog:true,
+                    dialogTitle:"Invalid credentials",
+                    dialogContent:"Invalid username or password"})
             } else{
                 localStorage.setItem('token', data.token);
+                self.setState({
+                    loginInProgress:false
+                });
             }
         });
     }
@@ -74,10 +85,10 @@ class Login extends Component{
                                     color="secondary" 
                                     style={{width:"100%"}}
                                     onClick={this.loginPressed}
-                                    disabled={this.state.logginInProgress}>
+                                    disabled={this.state.loginInProgress}>
                                     Login
                                     {
-                                        this.state.logginInProgress &&
+                                        this.state.loginInProgress &&
                                         <CircularProgress 
                                         size={24}
                                         style={{
@@ -89,12 +100,26 @@ class Login extends Component{
                                         }}/>
                                     }
                                 </Button>
-                                
                             </Grid>
                         </Grid>
                     </Paper>    
                 </Grid>
-                
+
+                <Dialog
+                    open={this.state.showDialog}
+                    onClose={()=>this.setState({showDialog:false})}
+                    aria-labelledby='alert-dialog-title'
+                    aria-describedby='alert-dialog-description'>
+                        <DialogTitle id="alert-dialog-title">{this.state.dialogTitle}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                {this.state.dialogContent}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={()=>this.setState({showDialog:false})}>Ok</Button>
+                        </DialogActions>
+                </Dialog>
             </Grid>
         )
     }
