@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import Kiosk from './Views/Kiosk.js';
 import Login from './Views/Login.js';
+import Dashboard from './Views/Dashboard.js';
 
 import {
   BrowserRouter as Router,
@@ -21,6 +22,7 @@ class App extends Component{
         <Router>
           <Switch>
             <Route path="/login" render={(props)=><Login {...props}/>}/>
+            <Route path='/dashboard' render={(props)=><Dashboard {...props}/>}/>
             <Route path="/" render={(props)=><Kiosk {...props}/>}/>
           </Switch>
         </Router>

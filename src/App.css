@@ -1,4 +1,7 @@
-
+html, body, #root, .appContainer{
+  height:100%;
+  width:100%;
+}
 
 .App-logo {
   height: 40vmin;
