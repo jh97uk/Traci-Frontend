@@ -16,8 +16,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 class Dashboard extends Component{
     constructor(props){
         super(props);
@@ -28,7 +32,25 @@ class Dashboard extends Component{
     }
 
     componentDidMount(){
-
+        const self = this;
+        fetch('http://localhost:4000/users/current', {
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            }
+            }).then(function(response){
+                return response;
+            }).then(function(data){
+                if(data.status == 401){
+                    localStorage.removeItem('token');
+                    self.setState({
+                        loginInProgress:false, 
+                        showDialog:true,
+                        dialogTitle:"Unauthorized",
+                        dialogContent:"You're not logged in!"})
+                }
+            })
     }
 
     handleProfileMenuOpen(event){
@@ -41,7 +63,7 @@ class Dashboard extends Component{
 
     handleLogout(event){
         this.setState({currentAnchor:undefined, loginRedirect:true});
-        localStorage.setItem('token', undefined);
+        localStorage.removeItem('token');
     }
 
 
@@ -110,6 +132,21 @@ class Dashboard extends Component{
                             </List>
                         </Paper>
                     </Grid>
+                    <Dialog
+                        open={this.state.showDialog}
+                        onClose={()=>this.setState({showDialog:false})}
+                        aria-labelledby='alert-dialog-title'
+                        aria-describedby='alert-dialog-description'>
+                            <DialogTitle id="alert-dialog-title">{this.state.dialogTitle}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    {this.state.dialogContent}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={()=>this.setState({loginRedirect:true})}>Ok</Button>
+                            </DialogActions>
+                    </Dialog>
                 </Grid>
             </div>
         )

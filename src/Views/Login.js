@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { Redirect } from 'react-router';
 
 class Login extends Component{
     constructor(props){
@@ -53,7 +54,8 @@ class Login extends Component{
     }
     
     render(){
-        
+        if(localStorage.getItem('token'))
+            return(<Redirect to={"/dashboard"}/>)
         return(
             <Grid container direction="row" justify="center" alignItem="center" style={{marginTop:150}}>
                 <Grid item xs={8} sm={6} md={5} lg={3}>
