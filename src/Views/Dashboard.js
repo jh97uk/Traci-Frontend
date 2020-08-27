@@ -40,16 +40,17 @@ class Dashboard extends Component{
                 'Authorization': 'Bearer '+localStorage.getItem('token')
             }
             }).then(function(response){
-                return response;
-            }).then(function(data){
-                if(data.status == 401){
+                if(response.status == 401){
                     localStorage.removeItem('token');
                     self.setState({
                         loginInProgress:false, 
                         showDialog:true,
                         dialogTitle:"Unauthorized",
                         dialogContent:"You're not logged in!"})
+                    return;
                 }
+                return response.json();
+            }).then(function(data){
             })
     }
 
