@@ -8,6 +8,16 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import { grey } from '@material-ui/core/colors';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+
 class Dashboard extends Component{
     constructor(props){
         super(props);
@@ -18,7 +28,7 @@ class Dashboard extends Component{
     }
 
     componentDidMount(){
-        
+
     }
 
     handleProfileMenuOpen(event){
@@ -45,6 +55,9 @@ class Dashboard extends Component{
                 flexFlow: "column",
                 height: "100vh"
             },
+            sidebar:{
+                height:'100%'
+            }
         }
         
         const profileItem = (<MenuItem>
@@ -66,6 +79,7 @@ class Dashboard extends Component{
             <div style={style.container}>
                 <AppBar position="static">
                     <Toolbar>
+                        <h1 style={{marginTop:0, marginBottom:0}}>Trac<i>i</i></h1>
                         <div style={{flexGrow:1}}></div>
                         {profileItem}
                         {
@@ -79,9 +93,24 @@ class Dashboard extends Component{
                         }
                     </Toolbar>
                 </AppBar>
-                <div style={{flex: "1 1 auto"}}>
-                    <h2>Content here</h2>
-                </div>
+                <Grid container style={{display:'flex', flex: "1 1 auto", flexDirection:"row"}}>
+                    <Grid item sm={4} md={3} lg={2} style={style.sidebar}>
+                        <Paper style={{
+                            height:'100%',
+                            width:'100%',
+                            backgroundColor:grey[100]
+                        }}>
+                            <List component='nav' aria-label="dashboard">
+                                <ListItem button>
+                                    <ListItemIcon>
+                                        <DashboardIcon/>
+                                    </ListItemIcon>
+                                    <ListItemText primary="Dashboard"/>
+                                </ListItem>
+                            </List>
+                        </Paper>
+                    </Grid>
+                </Grid>
             </div>
         )
     }
