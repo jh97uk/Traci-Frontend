@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Redirect} from 'react-router-dom';
+import {Route, Redirect} from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import { Toolbar } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -22,6 +23,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
+import DashboardLanding from './DashboardLanding.js';
+
 class Dashboard extends Component{
     constructor(props){
         super(props);
@@ -117,7 +121,7 @@ class Dashboard extends Component{
                     </Toolbar>
                 </AppBar>
                 <Grid container style={{display:'flex', flex: "1 1 auto", flexDirection:"row"}}>
-                    <Grid item sm={4} md={3} lg={2} style={style.sidebar}>
+                    <Box component={Grid} item sm={4} md={3} lg={2} style={style.sidebar} display={{xs:"none", sm:"block"}}>
                         <Paper style={{
                             height:'100%',
                             width:'100%',
@@ -132,6 +136,9 @@ class Dashboard extends Component{
                                 </ListItem>
                             </List>
                         </Paper>
+                    </Box>
+                    <Grid item xs={12} sm={8} md={9} lg={10}>
+                        <Route exact path={this.props.match.path} component={DashboardLanding}/>
                     </Grid>
                     <Dialog
                         open={this.state.showDialog}
