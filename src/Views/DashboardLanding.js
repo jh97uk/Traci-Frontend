@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { withTheme } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import { Card, CardContent } from '@material-ui/core';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import CustomersListCard from '../Components/CustomersListCard.js';
 
@@ -11,7 +11,7 @@ import CustomersListCard from '../Components/CustomersListCard.js';
 class DashboardLanding extends Component{
     constructor(props){
         super(props);
-        this.state = {customerCount:0}
+        this.state = {customerCount:null}
         this.updateSelectedDayCustomerNumber = this.updateSelectedDayCustomerNumber.bind(this);
     }
 
@@ -38,11 +38,24 @@ class DashboardLanding extends Component{
                             xs={12} 
                             sm={12} 
                             md={7}
-                            style={{backgroundColor:this.props.theme.palette.secondary.main}}>
+                            style={{backgroundColor:this.props.theme.palette.secondary.main, position:'relative'}}>
                                 <CardContent>
                                     <Typography variant='h8' style={{color:'white', width:"100vh"}}>TODAYS CUSTOMERS</Typography>
-                                    <Typography variant='h3' style={{color:'white', width:"100vh"}}>{this.state.customerCount}</Typography>
+                                    <Typography variant='h3' style={{color:'white', width:"100vh"}}>{this.state.customerCount ? this.state.customerCount : 'N/A'}</Typography>
                                 </CardContent>
+                                {!this.state.customerCount && (<div 
+                                    style={{
+                                        position:'absolute',
+                                        top:0,
+                                        zIndex:123,
+                                        width:'100%',
+                                        height:'100%',
+                                        backgroundColor:'rgba(230, 230, 230, 0.9)',
+                                        display:'flex',
+                                        justifyContent:'center',
+                                        alignItems:'center'}}>
+                                    <CircularProgress></CircularProgress>
+                                </div>)}
                             </Card>
                     </Grid>
                 </Grid>
