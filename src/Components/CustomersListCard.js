@@ -27,7 +27,7 @@ class CustomersListCard extends Component{
                 return response.json();
             }).then(function(data){
                 self.setState({customers:data});
-                console.log(new Date(Date.parse(data[0].entryTimestamp)).getHours())
+                self.props.customerCountSetter(data.length);
             })
     }
 
