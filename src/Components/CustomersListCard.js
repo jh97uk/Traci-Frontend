@@ -41,7 +41,7 @@ class CustomersListCard extends Component{
                     defaultValue=""
                     style={{width:'100%'}}/>
                     <List>
-                        {this.state.customers.map((item, index)=>(
+                        { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <ListItemText
                                     primary={item.phoneNumber}

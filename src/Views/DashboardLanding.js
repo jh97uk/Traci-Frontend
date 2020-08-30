@@ -41,9 +41,9 @@ class DashboardLanding extends Component{
                             style={{backgroundColor:this.props.theme.palette.secondary.main, position:'relative'}}>
                                 <CardContent>
                                     <Typography variant='h8' style={{color:'white', width:"100vh"}}>TODAYS CUSTOMERS</Typography>
-                                    <Typography variant='h3' style={{color:'white', width:"100vh"}}>{this.state.customerCount ? this.state.customerCount : 'N/A'}</Typography>
+                                    <Typography variant='h3' style={{color:'white', width:"100vh"}}>{(this.state.customerCount !== null) ? this.state.customerCount : 'N/A'}</Typography>
                                 </CardContent>
-                                {!this.state.customerCount && (<div 
+                                {(this.state.customerCount === null) && (<div 
                                     style={{
                                         position:'absolute',
                                         top:0,
