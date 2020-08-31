@@ -8,11 +8,26 @@ import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
 
 class CustomersListCard extends Component{
     constructor(props){
         super(props);
         this.state = {customers:[]}
+        this.timePickerRef = React.createRef()
+        this.activateTimePicker = this.activateTimePicker.bind(this);
+        this.onTimePicked = this.onTimePicked.bind(this);
+        this.getTimeString = this.getTimeString.bind(this);
+    }
+
+    activateTimePicker(event){
+        console.log(event);
+        this.timePickerRef.current.click();
+    }
+
+    onTimePicked(date){
+        console.log(date);
     }
 
     componentDidMount(){
@@ -27,12 +42,34 @@ class CustomersListCard extends Component{
                 return response.json();
             }).then(function(data){
                 self.setState({customers:data});
-                self.props.customerCountSetter(data.length);
+                let activeCustomerCount = 0;
+                for (const customer in data) {
+                    if (data.hasOwnProperty(customer)) {
+                        if(data[customer].departureTimestamp == null)
+                            activeCustomerCount+=1
+                    }
+                }
+                self.props.customerCountSetter(data.length, activeCustomerCount);
+
             })
+    }
+
+    getTimeString(date){
+        const itemDate = new Date(Date.parse(date));
+        return itemDate.getHours() + ":" + itemDate.getMinutes();
     }
 
     render(){
         return(
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <TimePicker
+                    clearable
+                    ampm={false}
+                    label="24 hours"
+                    value={new Date()}
+                    inputRef={this.timePickerRef}
+                    onChange={this.onTimePicked}
+                    style={{display:'none'}}/>
             <Card>
                 <CardContent>
                     <TextField
@@ -44,13 +81,18 @@ class CustomersListCard extends Component{
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <ListItemText
+                                    onClick={this.activateTimePicker}
                                     primary={item.phoneNumber}
-                                    secondary={new Date(Date.parse(item.entryTimestamp)).getHours() + ":" + new Date(Date.parse(item.entryTimestamp)).getMinutes() + " - " + (item.departureTimestamp ? (new Date(Date.parse(item.departureTimestamp)).getHours() + ":" + new Date(Date.parse(item.departureTimestamp)).getMinutes()) : 'N/A')}/>
+                                    secondary={
+                                        this.getTimeString(item.entryTimestamp)
+                                        + " - " + 
+                                        (item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}/>
                             </ListItem>
                         ))}  
                     </List>
                 </CardContent>
             </Card>
+            </MuiPickersUtilsProvider>
         )
     }
 }
