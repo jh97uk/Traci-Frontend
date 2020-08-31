@@ -19,15 +19,27 @@ class CustomersListCard extends Component{
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
         this.getTimeString = this.getTimeString.bind(this);
+        this.currentEditngIndex = null;
     }
 
-    activateTimePicker(event){
-        console.log(event);
+    activateTimePicker(index){
+        this.currentEditngIndex = index;
         this.timePickerRef.current.click();
     }
 
     onTimePicked(date){
-        console.log(date);
+        fetch('http://localhost:4000/customer/'+this.currentEditngIndex, {
+            method:"PATCH",
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            },
+            body:JSON.stringify({departureTimestamp:date})
+        }).then(function(response){
+            return response.json();
+        }).then(function(data){
+            console.log(data);
+        });
     }
 
     componentDidMount(){
@@ -81,7 +93,10 @@ class CustomersListCard extends Component{
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <ListItemText
-                                    onClick={this.activateTimePicker}
+                                    onClick={()=>{
+                                        if(item.departureTimestamp == null)
+                                            this.activateTimePicker(item.id)
+                                    }}
                                     primary={item.phoneNumber}
                                     secondary={
                                         this.getTimeString(item.entryTimestamp)
