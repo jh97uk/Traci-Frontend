@@ -19,6 +19,7 @@ class CustomersListCard extends Component{
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
         this.getTimeString = this.getTimeString.bind(this);
+        this.getActiveCustomerCount = this.getActiveCustomerCount.bind(this);
         this.currentEditngIndex = null;
     }
 
@@ -28,6 +29,7 @@ class CustomersListCard extends Component{
     }
 
     onTimePicked(date){
+        const self = this;
         fetch('http://localhost:4000/customer/'+this.currentEditngIndex, {
             method:"PATCH",
             headers:{
@@ -39,7 +41,37 @@ class CustomersListCard extends Component{
             return response.json();
         }).then(function(data){
             console.log(data);
+            fetch('http://localhost:4000/customer/'+self.currentEditngIndex, {
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization': 'Bearer '+localStorage.getItem('token')
+                }
+                }).then(function(response){
+                    return response.json();
+                }).then(function(data){
+                    self.state.customers.forEach(customer => {
+                        if(customer.id == self.currentEditngIndex){
+                            const updatedCustomerArray = self.state.customers;
+                            const id = self.state.customers.indexOf(customer)
+                            updatedCustomerArray[id] = {...updatedCustomerArray[id], ...data[0]}
+                            self.setState({customers:updatedCustomerArray})
+                            self.props.customerCountSetter(updatedCustomerArray.length, self.getActiveCustomerCount());
+                        }
+                    });
+                })
         });
+    }
+
+    getActiveCustomerCount(){
+        let activeCustomerCount = 0;
+        for (const customer in this.state.customers) {
+            if (this.state.customers.hasOwnProperty(customer)) {
+                if(this.state.customers[customer].departureTimestamp == null)
+                    activeCustomerCount+=1
+            }
+        }
+        return activeCustomerCount
     }
 
     componentDidMount(){
@@ -54,14 +86,7 @@ class CustomersListCard extends Component{
                 return response.json();
             }).then(function(data){
                 self.setState({customers:data});
-                let activeCustomerCount = 0;
-                for (const customer in data) {
-                    if (data.hasOwnProperty(customer)) {
-                        if(data[customer].departureTimestamp == null)
-                            activeCustomerCount+=1
-                    }
-                }
-                self.props.customerCountSetter(data.length, activeCustomerCount);
+                self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
 
             })
     }
