@@ -22,7 +22,35 @@ class CustomersListCard extends Component{
         this.onTimePicked = this.onTimePicked.bind(this);
         this.getTimeString = this.getTimeString.bind(this);
         this.getActiveCustomerCount = this.getActiveCustomerCount.bind(this);
+        this.onSearchFieldChange = this.onSearchFieldChange.bind(this);
+        this.initCustomers = this.initCustomers.bind(this);
         this.currentEditngIndex = null;
+    }
+
+    onSearchFieldChange(event){
+        const self = this;
+        const searchValue = event.target.value;
+        if(searchValue.length < 1){
+            this.initCustomers();
+            return;
+        }
+        self.setState({searchLoading:true});
+        fetch('http://localhost:4000/customer/search/'+searchValue, {
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            }
+            }).then(function(response){
+                return response.json();
+            }).then(function(data){
+                let stateUpdate = {customers:data, searchLoading:false};
+                if(data.length < 1)
+                    stateUpdate['noResults'] = true
+                    else
+                    stateUpdate['noResults'] = false
+                self.setState(stateUpdate);
+            })
     }
 
     activateTimePicker(index){
@@ -77,7 +105,7 @@ class CustomersListCard extends Component{
         return activeCustomerCount
     }
 
-    componentDidMount(){
+    initCustomers(){
         const self = this;
         fetch('http://localhost:4000/customer/', {
             method:'GET',
@@ -88,10 +116,18 @@ class CustomersListCard extends Component{
             }).then(function(response){
                 return response.json();
             }).then(function(data){
-                self.setState({customers:data, loading:false});
+                let stateUpdate = {customers:data, loading:false}
+                if(data.length < 1)
+                    stateUpdate['noResults'] = true
+                    else
+                    stateUpdate['noResults'] = false
+                self.setState(stateUpdate);
                 self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
-
             })
+    }
+
+    componentDidMount(){
+        this.initCustomers();
     }
 
     getTimeString(date){
@@ -116,7 +152,8 @@ class CustomersListCard extends Component{
                     id="outlined-required"
                     label="Search number"
                     defaultValue=""
-                    style={{width:'100%'}}/>
+                    style={{width:'100%'}}
+                    onChange={this.onSearchFieldChange}/>
                     <List>
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
@@ -148,7 +185,7 @@ class CustomersListCard extends Component{
                             alignItems:'center'}}>
                         <CircularProgress></CircularProgress>
                     </div>}
-                
+                {this.state.noResults && <h6 style={{width:'100%', textAlign:'center', marginTop:0}}>No results</h6>}
             </Card>
             </MuiPickersUtilsProvider>
         )
