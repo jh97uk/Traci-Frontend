@@ -154,7 +154,7 @@ class CustomersListCard extends Component{
                     defaultValue=""
                     style={{width:'100%'}}
                     onChange={this.onSearchFieldChange}/>
-                    <List>
+                    <List style={{minHeight:50}}>
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <ListItemText
@@ -169,6 +169,21 @@ class CustomersListCard extends Component{
                                         (item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}/>
                             </ListItem>
                         ))} 
+                        {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
+                        {this.state.searchLoading && <div 
+                            style={{
+                                position:'absolute',
+                                top:0,
+                                zIndex:123,
+                                width:'100%',
+                                height:'100%',
+                                backgroundColor:'rgba(230, 230, 230, 0.9)',
+                                display:'flex',
+                                justifyContent:'center',
+                                alignItems:'center'}}>
+                            <CircularProgress></CircularProgress>
+                        </div>}
+                        
                     </List>
                 </CardContent>
                 {this.state.loading && 
@@ -185,7 +200,6 @@ class CustomersListCard extends Component{
                             alignItems:'center'}}>
                         <CircularProgress></CircularProgress>
                     </div>}
-                {this.state.noResults && <h6 style={{width:'100%', textAlign:'center', marginTop:0}}>No results</h6>}
             </Card>
             </MuiPickersUtilsProvider>
         )
