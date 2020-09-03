@@ -9,14 +9,14 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, TimePicker, DatePicker } from "@material-ui/pickers";
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 class CustomersListCard extends Component{
     constructor(props){
         super(props);
-        this.state = {customers:[], loading:true}
+        this.state = {customers:[], loading:true, searchFilters:{startDate: new Date(), endDate: new Date()}}
         this.timePickerRef = React.createRef()
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
@@ -24,6 +24,8 @@ class CustomersListCard extends Component{
         this.getActiveCustomerCount = this.getActiveCustomerCount.bind(this);
         this.onSearchFieldChange = this.onSearchFieldChange.bind(this);
         this.initCustomers = this.initCustomers.bind(this);
+        this.onStartDateSelected = this.onStartDateSelected.bind(this);
+        this.onEndDateSelected = this.onEndDateSelected.bind(this);
         this.currentEditngIndex = null;
     }
 
@@ -34,8 +36,15 @@ class CustomersListCard extends Component{
             this.initCustomers();
             return;
         }
-        self.setState({searchLoading:true});
-        fetch('http://localhost:4000/customer/search/'+searchValue, {
+        self.setState({searchLoading:true, searchFilters:{...this.state.searchFilters, ...{value:searchValue}}});
+        this.searchWithFilters(this.state.searchFilters)
+    }
+
+    searchWithFilters(filters){
+        const self = this;
+        if(filters.value == undefined || filters.value == null)
+            filters.value = "";
+        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate.toISOString()+"&?endDate="+filters.endDate.toISOString(), {
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -52,10 +61,23 @@ class CustomersListCard extends Component{
                 self.setState(stateUpdate);
             })
     }
-
     activateTimePicker(index){
         this.currentEditngIndex = index;
         this.timePickerRef.current.click();
+    }
+
+    onStartDateSelected(date){
+        let updatedState = this.state.searchFilters;
+        updatedState['startDate'] = date;
+        this.setState({searchFilters:updatedState})
+        this.searchWithFilters(this.state.searchFilters)
+    }
+
+    onEndDateSelected(date){
+        let updatedState = this.state.searchFilters;
+        updatedState['endDate'] = date;
+        this.setState({searchFilters:updatedState})
+        this.searchWithFilters(this.state.searchFilters)
     }
 
     onTimePicked(date){
@@ -154,6 +176,18 @@ class CustomersListCard extends Component{
                     defaultValue=""
                     style={{width:'100%'}}
                     onChange={this.onSearchFieldChange}/>
+                    <DatePicker
+                        label="Start date"
+                        format="dd/MM/yy"
+                        style={{marginTop:15, width:'50%'}}
+                        onChange={this.onStartDateSelected}
+                        value={this.state.searchFilters.startDate}/>
+                        <DatePicker
+                            label="End date"
+                            format="dd/MM/yy"
+                            style={{marginTop:15, width:'50%'}}
+                            onChange={this.onEndDateSelected}
+                            value={this.state.searchFilters.endDate}/>
                     <List style={{minHeight:50}}>
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
