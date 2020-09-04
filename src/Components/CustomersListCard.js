@@ -40,10 +40,9 @@ class CustomersListCard extends Component{
 
     onSearchFieldChange(event){
         const self = this;
-        const searchValue = event.target.value;
+        let searchValue = event.target.value;
         if(searchValue.length < 1){
-            this.initCustomers();
-            return;
+            searchValue = null
         }
         self.setState({searchLoading:true});
         this.searchWithFilters({...this.state.searchFilters, ...{value:searchValue}})
