@@ -44,7 +44,7 @@ class CustomersListCard extends Component{
         const self = this;
         if(filters.value == undefined || filters.value == null)
             filters.value = "";
-        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate.toISOString()+"&?endDate="+filters.endDate.toISOString(), {
+        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate.toISOString()+"&endDate="+filters.endDate.toISOString(), {
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
