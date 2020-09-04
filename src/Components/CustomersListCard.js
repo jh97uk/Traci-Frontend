@@ -5,18 +5,24 @@ import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
+import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from "@material-ui/pickers";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { min } from 'date-fns';
 
 
 class CustomersListCard extends Component{
     constructor(props){
         super(props);
-        this.state = {customers:[], loading:true, searchFilters:{startDate: new Date(), endDate: new Date()}}
+        const minDate = new Date();
+        const maxDate = new Date();
+        minDate.setDate(minDate.getDate()-1);
+        maxDate.setDate(maxDate.getDate()+1);
+        this.state = {customers:[], loading:true, searchFilters:{startDate: minDate, endDate: maxDate}}
         this.timePickerRef = React.createRef()
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
@@ -26,6 +32,7 @@ class CustomersListCard extends Component{
         this.initCustomers = this.initCustomers.bind(this);
         this.onStartDateSelected = this.onStartDateSelected.bind(this);
         this.onEndDateSelected = this.onEndDateSelected.bind(this);
+        this.clearFilters = this.clearFilters.bind(this);
         this.currentEditngIndex = null;
     }
 
@@ -129,6 +136,7 @@ class CustomersListCard extends Component{
 
     initCustomers(){
         const self = this;
+        this.setState({searchLoading:true})
         fetch('http://localhost:4000/customer/', {
             method:'GET',
             headers:{
@@ -138,7 +146,7 @@ class CustomersListCard extends Component{
             }).then(function(response){
                 return response.json();
             }).then(function(data){
-                let stateUpdate = {customers:data, loading:false}
+                let stateUpdate = {customers:data, loading:false, searchLoading:false}
                 if(data.length < 1)
                     stateUpdate['noResults'] = true
                     else
@@ -155,6 +163,15 @@ class CustomersListCard extends Component{
     getTimeString(date){
         const itemDate = new Date(Date.parse(date));
         return itemDate.getHours() + ":" + itemDate.getMinutes();
+    }
+
+    clearFilters(){
+        const minDate = new Date();
+        const maxDate = new Date();
+        minDate.setDate(minDate.getDate()-1);
+        maxDate.setDate(maxDate.getDate()+1);
+        this.setState({searchFilters:{startDate: minDate, endDate: maxDate}})
+        this.initCustomers()
     }
 
     render(){
@@ -175,19 +192,21 @@ class CustomersListCard extends Component{
                     label="Search number"
                     defaultValue=""
                     style={{width:'100%'}}
-                    onChange={this.onSearchFieldChange}/>
+                    onChange={this.onSearchFieldChange}
+                    value={this.state.searchFilters.value ? this.state.searchFilters.value : ''}/>
                     <DatePicker
-                        label="Start date"
+                        label="Between"
                         format="dd/MM/yy"
                         style={{marginTop:15, width:'50%'}}
                         onChange={this.onStartDateSelected}
                         value={this.state.searchFilters.startDate}/>
-                        <DatePicker
-                            label="End date"
-                            format="dd/MM/yy"
-                            style={{marginTop:15, width:'50%'}}
-                            onChange={this.onEndDateSelected}
-                            value={this.state.searchFilters.endDate}/>
+                    <DatePicker
+                        label="and"
+                        format="dd/MM/yy"
+                        style={{marginTop:15, width:'50%'}}
+                        onChange={this.onEndDateSelected}
+                        value={this.state.searchFilters.endDate}/>
+                    <Button style={{width:'100%', marginTop:10, paddingBottom:0}} onClick={this.clearFilters}>CLEAR FILTERS</Button>
                     <List style={{minHeight:50}}>
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
