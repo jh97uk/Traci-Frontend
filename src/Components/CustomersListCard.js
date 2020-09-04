@@ -45,14 +45,15 @@ class CustomersListCard extends Component{
             this.initCustomers();
             return;
         }
-        self.setState({searchLoading:true, searchFilters:{...this.state.searchFilters, ...{value:searchValue}}});
-        this.searchWithFilters(this.state.searchFilters)
+        self.setState({searchLoading:true});
+        this.searchWithFilters({...this.state.searchFilters, ...{value:searchValue}})
     }
 
     searchWithFilters(filters){
         const self = this;
         if(filters.value == undefined || filters.value == null)
             filters.value = "";
+        self.setState({searchFilters:filters});
         fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate.toISOString()+"&endDate="+filters.endDate.toISOString(), {
             method:'GET',
             headers:{
@@ -78,15 +79,13 @@ class CustomersListCard extends Component{
     onStartDateSelected(date){
         let updatedState = this.state.searchFilters;
         updatedState['startDate'] = date;
-        this.setState({searchFilters:updatedState})
-        this.searchWithFilters(this.state.searchFilters)
+        this.searchWithFilters(updatedState)
     }
 
     onEndDateSelected(date){
         let updatedState = this.state.searchFilters;
         updatedState['endDate'] = date;
-        this.setState({searchFilters:updatedState})
-        this.searchWithFilters(this.state.searchFilters)
+        this.searchWithFilters(updatedState)
     }
 
     onTimePicked(date){
@@ -213,7 +212,7 @@ class CustomersListCard extends Component{
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <Grid container>
-                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%'}}>{item.phoneNumber}</Typography>
+                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%', cursor:'pointer'}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{value:item.phoneNumber}})}>{item.phoneNumber}</Typography>
                                     <Grid item>
                                         <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
                                         -
