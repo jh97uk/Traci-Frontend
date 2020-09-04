@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -13,6 +14,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from "@material-ui/pickers";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { min } from 'date-fns';
+import { Typography } from '@material-ui/core';
 
 
 class CustomersListCard extends Component{
@@ -210,16 +212,22 @@ class CustomersListCard extends Component{
                     <List style={{minHeight:50}}>
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
-                                <ListItemText
-                                    onClick={()=>{
-                                        if(item.departureTimestamp == null)
-                                            this.activateTimePicker(item.id)
-                                    }}
-                                    primary={item.phoneNumber}
-                                    secondary={
-                                        this.getTimeString(item.entryTimestamp)
-                                        + " - " + 
-                                        (item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}/>
+                                <Grid container>
+                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%'}}>{item.phoneNumber}</Typography>
+                                    <Grid item>
+                                        <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
+                                        -
+                                        <Typography 
+                                            variant='h7' 
+                                            style={{color:'grey', fontSize:14, cursor:(item.departureTimestamp ? 'default' : 'pointer')}}
+                                            onClick={()=>{
+                                                if(item.departureTimestamp == null)
+                                                    this.activateTimePicker(item.id)
+                                            }}> {(item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}</Typography>
+                                    </Grid>
+                                    
+                                </Grid>
+                                
                             </ListItem>
                         ))} 
                         {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
