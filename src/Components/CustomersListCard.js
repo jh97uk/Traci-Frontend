@@ -22,8 +22,8 @@ class CustomersListCard extends Component{
         super(props);
         const minDate = new Date();
         const maxDate = new Date();
-        minDate.setDate(minDate.getDate()-1);
-        maxDate.setDate(maxDate.getDate()+1);
+        minDate.setHours(0, 0, 0, 0);
+        maxDate.setHours(23, 59, 59, 0);
         this.state = {customers:[], loading:true, searchFilters:{startDate: minDate, endDate: maxDate}}
         this.timePickerRef = React.createRef()
         this.activateTimePicker = this.activateTimePicker.bind(this);
@@ -53,7 +53,8 @@ class CustomersListCard extends Component{
         if(filters.value == undefined || filters.value == null)
             filters.value = "";
         self.setState({searchFilters:filters});
-        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate.toISOString()+"&endDate="+filters.endDate.toISOString(), {
+        console.log(filters);
+        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate, {
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -76,12 +77,14 @@ class CustomersListCard extends Component{
     }
 
     onStartDateSelected(date){
+        date.setHours(0, 0, 0, 0);
         let updatedState = this.state.searchFilters;
         updatedState['startDate'] = date;
         this.searchWithFilters(updatedState)
     }
 
     onEndDateSelected(date){
+        date.setHours(23, 59, 59, 0)
         let updatedState = this.state.searchFilters;
         updatedState['endDate'] = date;
         this.searchWithFilters(updatedState)
@@ -168,8 +171,8 @@ class CustomersListCard extends Component{
     clearFilters(){
         const minDate = new Date();
         const maxDate = new Date();
-        minDate.setDate(minDate.getDate()-1);
-        maxDate.setDate(maxDate.getDate()+1);
+        minDate.setHours(0, 0, 0, 0);
+        maxDate.setHours(23, 59, 59, 0);
         this.setState({searchFilters:{startDate: minDate, endDate: maxDate}})
         this.initCustomers()
     }
@@ -211,7 +214,7 @@ class CustomersListCard extends Component{
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <Grid container>
-                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%', cursor:'pointer'}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{value:item.phoneNumber}})}>{item.phoneNumber}</Typography>
+                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%', cursor:'pointer'}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp}})}>{item.phoneNumber}</Typography>
                                     <Grid item>
                                         <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
                                         -
