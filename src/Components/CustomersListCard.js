@@ -15,7 +15,11 @@ import { MuiPickersUtilsProvider, TimePicker, DatePicker } from "@material-ui/pi
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { min } from 'date-fns';
 import { Typography } from '@material-ui/core';
+import ButtonBase from '@material-ui/core/ButtonBase';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
+import AddCustomerDialog from '../Components/AddCustomerDialog.js';
 
 class CustomersListCard extends Component{
     constructor(props){
@@ -188,8 +192,9 @@ class CustomersListCard extends Component{
                     inputRef={this.timePickerRef}
                     onChange={this.onTimePicked}
                     style={{display:'none'}}/>
+                    <AddCustomerDialog open={true}></AddCustomerDialog>
             <Card style={{position:'relative'}}>
-                <CardContent>
+                <CardContent style={{paddingBottom:20}}>
                     <TextField
                     id="outlined-required"
                     label="Search number"
@@ -214,7 +219,7 @@ class CustomersListCard extends Component{
                         { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                             <ListItem>
                                 <Grid container>
-                                    <Typography component={Grid} item variant='h7' style={{float:'left', width:'100%', cursor:'pointer'}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp}})}>{item.phoneNumber}</Typography>
+                                    <ButtonBase><Typography component={Grid} item style={{float:'left', width:'100%', cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
                                     <Grid item>
                                         <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
                                         -
@@ -247,6 +252,11 @@ class CustomersListCard extends Component{
                         </div>}
                         
                     </List>
+                    <div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
+                        <Fab color="primary" aria-label="add" size="small">
+                            <AddIcon />
+                        </Fab>
+                    </div>
                 </CardContent>
                 {this.state.loading && 
                     <div 
@@ -262,6 +272,7 @@ class CustomersListCard extends Component{
                             alignItems:'center'}}>
                         <CircularProgress></CircularProgress>
                     </div>}
+                    
             </Card>
             </MuiPickersUtilsProvider>
         )
