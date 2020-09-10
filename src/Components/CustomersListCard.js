@@ -39,6 +39,7 @@ class CustomersListCard extends Component{
         this.onStartDateSelected = this.onStartDateSelected.bind(this);
         this.onEndDateSelected = this.onEndDateSelected.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
+        this.onAddCustomerDialogClosed = this.onAddCustomerDialogClosed.bind(this);
         this.currentEditngIndex = null;
     }
 
@@ -181,6 +182,19 @@ class CustomersListCard extends Component{
         this.initCustomers()
     }
 
+    onAddCustomerDialogClosed(data){
+        console.log(data)
+        if(data){
+            let customers = this.state.customers;
+            customers.push(data.entry);
+            this.setState({showAddCustomerDialog:false, customers:customers, noResults:false});
+            console.log(this.state);
+            console.log(customers);
+        } else{
+            this.setState({showAddCustomerDialog:false});
+        }
+    }
+
     render(){
         return(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -192,52 +206,74 @@ class CustomersListCard extends Component{
                     inputRef={this.timePickerRef}
                     onChange={this.onTimePicked}
                     style={{display:'none'}}/>
-                    <AddCustomerDialog open={true}></AddCustomerDialog>
-            <Card style={{position:'relative'}}>
-                <CardContent style={{paddingBottom:20}}>
-                    <TextField
-                    id="outlined-required"
-                    label="Search number"
-                    defaultValue=""
-                    style={{width:'100%'}}
-                    onChange={this.onSearchFieldChange}
-                    value={this.state.searchFilters.value ? this.state.searchFilters.value : ''}/>
-                    <DatePicker
-                        label="Between"
-                        format="dd/MM/yy"
-                        style={{marginTop:15, width:'50%'}}
-                        onChange={this.onStartDateSelected}
-                        value={this.state.searchFilters.startDate}/>
-                    <DatePicker
-                        label="and"
-                        format="dd/MM/yy"
-                        style={{marginTop:15, width:'50%'}}
-                        onChange={this.onEndDateSelected}
-                        value={this.state.searchFilters.endDate}/>
-                    <Button style={{width:'100%', marginTop:10, paddingBottom:0}} onClick={this.clearFilters}>CLEAR FILTERS</Button>
-                    <List style={{minHeight:50}}>
-                        { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
-                            <ListItem>
-                                <Grid container>
-                                    <ButtonBase><Typography component={Grid} item style={{float:'left', width:'100%', cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
-                                    <Grid item>
-                                        <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
-                                        -
-                                        <Typography 
-                                            variant='h7' 
-                                            style={{color:'grey', fontSize:14, cursor:(item.departureTimestamp ? 'default' : 'pointer')}}
-                                            onClick={()=>{
-                                                if(item.departureTimestamp == null)
-                                                    this.activateTimePicker(item.id)
-                                            }}> {(item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}</Typography>
+                <AddCustomerDialog open={this.state.showAddCustomerDialog} onClose={this.onAddCustomerDialogClosed}></AddCustomerDialog>
+                <Card style={{position:'relative'}}>
+                    <CardContent style={{paddingBottom:20}}>
+                        <TextField
+                        id="outlined-required"
+                        label="Search number"
+                        defaultValue=""
+                        style={{width:'100%'}}
+                        onChange={this.onSearchFieldChange}
+                        value={this.state.searchFilters.value ? this.state.searchFilters.value : ''}/>
+                        <DatePicker
+                            label="Between"
+                            format="dd/MM/yy"
+                            style={{marginTop:15, width:'50%'}}
+                            onChange={this.onStartDateSelected}
+                            value={this.state.searchFilters.startDate}/>
+                        <DatePicker
+                            label="and"
+                            format="dd/MM/yy"
+                            style={{marginTop:15, width:'50%'}}
+                            onChange={this.onEndDateSelected}
+                            value={this.state.searchFilters.endDate}/>
+                        <Button style={{width:'100%', marginTop:10, paddingBottom:0}} onClick={this.clearFilters}>CLEAR FILTERS</Button>
+                        <List style={{minHeight:50}}>
+                            { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
+                                <ListItem>
+                                    <Grid container>
+                                        <ButtonBase><Typography component={Grid} item style={{float:'left', width:'100%', cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
+                                        <Grid item>
+                                            <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
+                                            -
+                                            <Typography 
+                                                variant='h7' 
+                                                style={{color:'grey', fontSize:14, cursor:(item.departureTimestamp ? 'default' : 'pointer')}}
+                                                onClick={()=>{
+                                                    if(item.departureTimestamp == null)
+                                                        this.activateTimePicker(item.id)
+                                                }}> {(item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}</Typography>
+                                        </Grid>
+                                        
                                     </Grid>
                                     
-                                </Grid>
-                                
-                            </ListItem>
-                        ))} 
-                        {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
-                        {this.state.searchLoading && <div 
+                                </ListItem>
+                            ))} 
+                            {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
+                            {this.state.searchLoading && <div 
+                                style={{
+                                    position:'absolute',
+                                    top:0,
+                                    zIndex:123,
+                                    width:'100%',
+                                    height:'100%',
+                                    backgroundColor:'rgba(230, 230, 230, 0.9)',
+                                    display:'flex',
+                                    justifyContent:'center',
+                                    alignItems:'center'}}>
+                                <CircularProgress></CircularProgress>
+                            </div>}
+                            
+                        </List>
+                        <div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
+                            <Fab color="primary" aria-label="add" size="small" onClick={()=>this.setState({showAddCustomerDialog:true})}>
+                                <AddIcon />
+                            </Fab>
+                        </div>
+                    </CardContent>
+                    {this.state.loading && 
+                        <div 
                             style={{
                                 position:'absolute',
                                 top:0,
@@ -251,29 +287,7 @@ class CustomersListCard extends Component{
                             <CircularProgress></CircularProgress>
                         </div>}
                         
-                    </List>
-                    <div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
-                        <Fab color="primary" aria-label="add" size="small">
-                            <AddIcon />
-                        </Fab>
-                    </div>
-                </CardContent>
-                {this.state.loading && 
-                    <div 
-                        style={{
-                            position:'absolute',
-                            top:0,
-                            zIndex:123,
-                            width:'100%',
-                            height:'100%',
-                            backgroundColor:'rgba(230, 230, 230, 0.9)',
-                            display:'flex',
-                            justifyContent:'center',
-                            alignItems:'center'}}>
-                        <CircularProgress></CircularProgress>
-                    </div>}
-                    
-            </Card>
+                </Card>
             </MuiPickersUtilsProvider>
         )
     }
