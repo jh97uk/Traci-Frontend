@@ -51,6 +51,18 @@ class AddCustomerDialog extends Component{
     
     submitEntry(){
         const self = this;
+
+        let entryTimestamp = self.state.entryDate;
+        let departureTimestamp = self.state.departureDate;
+
+        entryTimestamp.setHours(self.state.entryTime.getHours());
+        entryTimestamp.setMinutes(self.state.entryTime.getMinutes());
+        entryTimestamp.setSeconds(self.state.entryTime.getSeconds());
+
+        departureTimestamp.setHours(self.state.departureTime.getHours());
+        departureTimestamp.setMinutes(self.state.departureTime.getMinutes());
+        departureTimestamp.setSeconds(self.state.departureTime.getSeconds());
+        
         fetch('http://localhost:4000/customer/entry', {
             method:'POST',
             headers:{
@@ -59,15 +71,12 @@ class AddCustomerDialog extends Component{
             },
             body:JSON.stringify({
                 number:self.state.phoneNumber,
-                entryDate: self.state.entryDate,
-                entryTime:self.state.entryTime,
-                departureDate: self.state.departureDate,
-                departureTime: self.state.departureTime
+                entryTimestamp:entryTimestamp,
+                departureTimestamp:departureTimestamp
             })
         }).then(function(response){
             return response.json();
         }).then(function(data){
-            console.log(data);
         })
     }
 
