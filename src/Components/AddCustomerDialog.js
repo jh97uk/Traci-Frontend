@@ -10,13 +10,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 
 import TextField from '@material-ui/core/TextField';
 import KeyboardDateInput from '@material-ui/pickers/_shared/KeyboardDateInput';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider, DialogTitle } from '@material-ui/core';
+
+import SimpleAlertDialog from '../Components/SimpleAlertDialog.js';
 
 class AddCustomerDialog extends Component{
     constructor(props){
         super()
-
-        this.state = {phoneNumber:'', entryDate:new Date(), entryTime:new Date(), departureDate: new Date(), departureTime: new Date()};
+        this.defaultState = {phoneNumber:'', entryDate:new Date(), entryTime:new Date(), departureDate: new Date(), departureTime: new Date(), loading:false, error:false};
+        this.state = this.defaultState
 
         this.submitEntry = this.submitEntry.bind(this);
         
@@ -77,7 +79,11 @@ class AddCustomerDialog extends Component{
         }).then(function(response){
             return response.json();
         }).then(function(data){
-            self.setState({loading:false});
+            if(data.error){
+                self.setState({error:{title:'Something went wrong...', message:data.error}, loading:false});
+                return;
+            }
+            self.setState(self.defaultState);
             self.props.onClose(data)
         })
     }
@@ -143,6 +149,7 @@ class AddCustomerDialog extends Component{
                             
                         </DialogActions>
                 </Dialog>
+                <SimpleAlertDialog title={this.state.error.title} message={this.state.error.message} show={this.state.error} onClose={()=>this.setState({error:false})}/>
             </MuiThemeProvider>)
     }
 }
