@@ -62,7 +62,7 @@ class AddCustomerDialog extends Component{
         departureTimestamp.setHours(self.state.departureTime.getHours());
         departureTimestamp.setMinutes(self.state.departureTime.getMinutes());
         departureTimestamp.setSeconds(self.state.departureTime.getSeconds());
-        
+        self.setState({loading:true});
         fetch('http://localhost:4000/customer/entry', {
             method:'POST',
             headers:{
@@ -77,6 +77,8 @@ class AddCustomerDialog extends Component{
         }).then(function(response){
             return response.json();
         }).then(function(data){
+            self.setState({loading:false});
+            self.props.onClose(data)
         })
     }
 
@@ -89,21 +91,23 @@ class AddCustomerDialog extends Component{
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description">
                         <DialogContent>
-                            <TextField label="Phone Number" style={{width:'100%', marginBottom:15}} value={this.state.phoneNumber} onChange={this.onPhoneNumberChanged}/>
+                            <TextField label="Phone Number" style={{width:'100%', marginBottom:15}} value={this.state.phoneNumber} onChange={this.onPhoneNumberChanged} disabled={this.state.loading}/>
                             <div style={{width:'100%', marginBottom:15}}>
                                 <DatePicker
                                     format='dd/MM/yy'
                                     label='Entry date'
                                     value={this.state.entryDate}
                                     onChange={this.onEntryDatePicked}
-                                    style={{width:'50%'}}/>
+                                    style={{width:'50%'}}
+                                    disabled={this.state.loading}/>
                                 <TimePicker
                                     clearable
                                     ampm={false}
                                     label="Entry time"
                                     value={this.state.departureTime}
                                     onChange={this.onEntryTimePicked}
-                                    style={{width:'50%'}}/>
+                                    style={{width:'50%'}}
+                                    disabled={this.state.loading}/>
                             </div>
 
                             <div style={{width:'100%'}}>
@@ -112,19 +116,31 @@ class AddCustomerDialog extends Component{
                                     label='Departure date'
                                     value={this.state.departureDate}
                                     onChange={this.onDepartureDatePicked}
-                                    style={{width:'50%'}}/>
+                                    style={{width:'50%'}}
+                                    disabled={this.state.loading}/>
                                 <TimePicker
                                     clearable
                                     ampm={false}
                                     label="Departure time"
                                     value={this.state.departureTime}
                                     onChange={this.onDepartureTimePicked}
-                                    style={{width:'50%'}}/>
+                                    style={{width:'50%'}}
+                                    disabled={this.state.loading}/>
                             </div>
                         </DialogContent>
                         <DialogActions>
-                            <Button>Cancel</Button>
-                            <Button color="primary" onClick={this.submitEntry} autoFocus>Add entry</Button>
+                            <Button onClick={()=>this.props.onClose()}>Cancel</Button>
+                            {this.state.loading ? 
+                                <CircularProgress style={{
+                                    width:20,
+                                    height:20,
+                                    marginRight:10,
+                                    marginTop:-4
+                                }}></CircularProgress>
+                                    :
+                                <Button color="primary" onClick={()=>this.submitEntry()} autoFocus>Add entry</Button>
+                            }
+                            
                         </DialogActions>
                 </Dialog>
             </MuiThemeProvider>)
