@@ -183,13 +183,10 @@ class CustomersListCard extends Component{
     }
 
     onAddCustomerDialogClosed(data){
-        console.log(data)
         if(data){
             let customers = this.state.customers;
             customers.push(data.entry);
             this.setState({showAddCustomerDialog:false, customers:customers, noResults:false});
-            console.log(this.state);
-            console.log(customers);
         } else{
             this.setState({showAddCustomerDialog:false});
         }
@@ -233,7 +230,12 @@ class CustomersListCard extends Component{
                             { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                                 <ListItem>
                                     <Grid container>
-                                        <ButtonBase><Typography component={Grid} item style={{float:'left', width:'100%', cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
+                                        <ButtonBase component={Grid} item style={{justifyContent:'left'}} sx={12}><Typography style={{cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
+                                        <Grid item xs={12}>
+                                            <Typography variant='h7' style={{color:'grey', fontSize:14}}>
+                                                {new Date(Date.parse(item.entryTimestamp)).toISOString().split('T')[0]}
+                                            </Typography>
+                                        </Grid>
                                         <Grid item>
                                             <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
                                             -
