@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -18,8 +19,10 @@ import { Typography } from '@material-ui/core';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import AddCustomerDialog from '../Components/AddCustomerDialog.js';
+import AddCustomerDialog from './AddCustomerDialog.js';
+import CustomerListItem from './CustomerListItem.js';
 
 class CustomersListCard extends Component{
     constructor(props){
@@ -32,7 +35,6 @@ class CustomersListCard extends Component{
         this.timePickerRef = React.createRef()
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
-        this.getTimeString = this.getTimeString.bind(this);
         this.getActiveCustomerCount = this.getActiveCustomerCount.bind(this);
         this.onSearchFieldChange = this.onSearchFieldChange.bind(this);
         this.initCustomers = this.initCustomers.bind(this);
@@ -168,10 +170,7 @@ class CustomersListCard extends Component{
         this.initCustomers();
     }
 
-    getTimeString(date){
-        const itemDate = new Date(Date.parse(date));
-        return itemDate.getHours() + ":" + itemDate.getMinutes();
-    }
+    
 
     clearFilters(){
         const minDate = new Date();
@@ -228,29 +227,12 @@ class CustomersListCard extends Component{
                         <Button style={{width:'100%', marginTop:10, paddingBottom:0}} onClick={this.clearFilters}>CLEAR FILTERS</Button>
                         <List style={{minHeight:50}}>
                             { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
-                                <ListItem>
-                                    <Grid container>
-                                        <ButtonBase component={Grid} item style={{justifyContent:'left'}} sx={12}><Typography style={{cursor:'pointer', fontSize:16}} onClick={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}>{item.phoneNumber}</Typography></ButtonBase>
-                                        <Grid item xs={12}>
-                                            <Typography variant='h7' style={{color:'grey', fontSize:14}}>
-                                                {new Date(Date.parse(item.entryTimestamp)).toISOString().split('T')[0]}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                            <Typography variant='h7' style={{color:'grey', fontSize:14}}>{this.getTimeString(item.entryTimestamp)} </Typography>
-                                            -
-                                            <Typography 
-                                                variant='h7' 
-                                                style={{color:'grey', fontSize:14, cursor:(item.departureTimestamp ? 'default' : 'pointer')}}
-                                                onClick={()=>{
-                                                    if(item.departureTimestamp == null)
-                                                        this.activateTimePicker(item.id)
-                                                }}> {(item.departureTimestamp ? (this.getTimeString(item.departureTimestamp)) : "N/A")}</Typography>
-                                        </Grid>
-                                        
-                                    </Grid>
-                                    
-                                </ListItem>
+                                <CustomerListItem 
+                                    phoneNumber={item.phoneNumber} 
+                                    onNumberClicked={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}
+                                    item={item}
+                                    editDepartureTime={this.activateTimePicker}
+                                    />
                             ))} 
                             {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
                             {this.state.searchLoading && <div 
