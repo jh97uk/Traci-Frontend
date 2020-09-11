@@ -135,7 +135,10 @@ class AddCustomerDialog extends Component{
                             </div>
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={()=>this.props.onClose()}>Cancel</Button>
+                            <Button onClick={()=>{
+                                    this.setState(this.defaultState)
+                                    this.props.onClose()
+                                }}>Cancel</Button>
                             {this.state.loading ? 
                                 <CircularProgress style={{
                                     width:20,
