@@ -20,9 +20,16 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import AddCustomerDialog from './AddCustomerDialog.js';
 import CustomerListItem from './CustomerListItem.js';
+import SimpleAlertDialog from './SimpleAlertDialog.js';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+
+import {DialogTitle} from '@material-ui/core';
 
 class CustomersListCard extends Component{
     constructor(props){
@@ -42,6 +49,9 @@ class CustomersListCard extends Component{
         this.onEndDateSelected = this.onEndDateSelected.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
         this.onAddCustomerDialogClosed = this.onAddCustomerDialogClosed.bind(this);
+        this.onMoreButtonPressed = this.onMoreButtonPressed.bind(this);
+        this.handlePopupClose = this.handlePopupClose.bind(this);
+        this.deleteEntryById = this.deleteEntryById.bind(this);
         this.currentEditngIndex = null;
     }
 
@@ -191,9 +201,45 @@ class CustomersListCard extends Component{
         }
     }
 
+    onMoreButtonPressed(event, itemId, itemIndex){
+        this.setState({currentAnchor:event.currentTarget, popupMenuItemId:itemId, popupMenuItemIndex:itemIndex});
+    }
+
+    handlePopupClose(event){
+        this.setState({currentAnchor:undefined});
+    }
+
+    deleteEntryById(id, index){
+        const self = this;
+        fetch('http://localhost:4000/customer/'+id, {
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            }
+            }).then(function(response){
+                return response.json();
+            }).then(function(data){
+                let customers = self.state.customers;
+                customers.splice(index, 1);
+                self.setState({itemIsBeingDeleted:false, customers:customers, currentAnchor:undefined});
+            })
+    }
+
     render(){
+        console.log(this.state);    
         return(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                {this.state.itemIsBeingDeleted &&
+                <Dialog open={this.state.itemIsBeingDeleted}>
+                    <DialogContent>
+                        <DialogTitle>Are you sure you want to delete this entry?</DialogTitle>
+                        <DialogActions>
+                            <Button onClick={()=>this.setState({itemIsBeingDeleted:false})}>Cancel</Button>
+                            <Button onClick={()=>this.deleteEntryById(this.state.popupMenuItemId, this.state.popupMenuItemIndex)}>Delete</Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>}
                 <TimePicker
                     clearable
                     ampm={false}
@@ -231,8 +277,10 @@ class CustomersListCard extends Component{
                                     phoneNumber={item.phoneNumber} 
                                     onNumberClicked={()=>this.searchWithFilters({...this.state.searchFilters, ...{startDate:item.entryTimestamp, endDate:item.departureTimestamp, value:''}})}
                                     item={item}
+                                    index={index}
                                     editDepartureTime={this.activateTimePicker}
-                                    />
+                                    onItemMoreButtonPressed={this.onMoreButtonPressed}
+                                    onItemMoreButtonClosed={this.handlePopupClose}/>
                             ))} 
                             {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
                             {this.state.searchLoading && <div 
@@ -270,7 +318,16 @@ class CustomersListCard extends Component{
                                 alignItems:'center'}}>
                             <CircularProgress></CircularProgress>
                         </div>}
-                        
+                        {
+                            this.state.currentAnchor && (
+                            <Menu
+                                open={true}
+                                anchorEl={this.state.currentAnchor}
+                                onClose={this.handlePopupClose}>
+                                <MenuItem>Edit</MenuItem>
+                                <MenuItem onClick={()=> this.setState({itemIsBeingDeleted:true})}>Delete</MenuItem>
+                            </Menu>)
+                        }
                 </Card>
             </MuiPickersUtilsProvider>
         )

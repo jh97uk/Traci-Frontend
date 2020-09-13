@@ -4,19 +4,30 @@ import ListItem from '@material-ui/core/ListItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Grid from '@material-ui/core/Grid';
+
 import IconButton from '@material-ui/core/IconButton';
 import { Typography } from '@material-ui/core';
 
 class CustomerListItem extends Component{
     constructor(props){
         super(props);
-
+        this.state = {}
         this.getTimeString = this.getTimeString.bind(this);
+        this.onMoreButtonPressed = this.onMoreButtonPressed.bind(this);
+        this.handlePopupClose = this.handlePopupClose.bind(this);
     }
 
     getTimeString(date){
         const itemDate = new Date(Date.parse(date));
         return itemDate.getHours() + ":" + itemDate.getMinutes();
+    }
+
+    onMoreButtonPressed(event){
+        this.props.onItemMoreButtonPressed(event, this.props.item.id);
+    }
+
+    handlePopupClose(event){
+        this.props.onItemMoreButtonClosed(event);
     }
 
     render(){
@@ -54,13 +65,12 @@ class CustomerListItem extends Component{
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <IconButton size="small" color="grey" aria-label="Edit">
+                            <IconButton size="small" color="grey" aria-label="Edit" onClick={this.onMoreButtonPressed}>
                                 <MoreVertIcon />
                             </IconButton>
                         </Grid>
                     </Grid>
                 </Grid>
-                
             </ListItem>
         )
     }
