@@ -23,7 +23,7 @@ class CustomerListItem extends Component{
     }
 
     onMoreButtonPressed(event){
-        this.props.onItemMoreButtonPressed(event, this.props.item.id);
+        this.props.onItemMoreButtonPressed(event, this.props.item.id, this.props.index);
     }
 
     handlePopupClose(event){

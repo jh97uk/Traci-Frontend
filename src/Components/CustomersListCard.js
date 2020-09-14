@@ -81,10 +81,6 @@ class CustomersListCard extends Component{
                 return response.json();
             }).then(function(data){
                 let stateUpdate = {customers:data, searchLoading:false};
-                if(data.length < 1)
-                    stateUpdate['noResults'] = true
-                    else
-                    stateUpdate['noResults'] = false
                 self.setState(stateUpdate);
             })
     }
@@ -167,10 +163,6 @@ class CustomersListCard extends Component{
                 return response.json();
             }).then(function(data){
                 let stateUpdate = {customers:data, loading:false, searchLoading:false}
-                if(data.length < 1)
-                    stateUpdate['noResults'] = true
-                    else
-                    stateUpdate['noResults'] = false
                 self.setState(stateUpdate);
                 self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
             })
@@ -195,7 +187,7 @@ class CustomersListCard extends Component{
         if(data){
             let customers = this.state.customers;
             customers.push(data.entry);
-            this.setState({showAddCustomerDialog:false, customers:customers, noResults:false});
+            this.setState({showAddCustomerDialog:false, customers:customers});
         } else{
             this.setState({showAddCustomerDialog:false});
         }
@@ -282,7 +274,7 @@ class CustomersListCard extends Component{
                                     onItemMoreButtonPressed={this.onMoreButtonPressed}
                                     onItemMoreButtonClosed={this.handlePopupClose}/>
                             ))} 
-                            {this.state.noResults && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
+                            {this.state.customers.length < 1 && <h6 style={{width:'100%', textAlign:'center'}}>No results</h6>}
                             {this.state.searchLoading && <div 
                                 style={{
                                     position:'absolute',
@@ -325,7 +317,7 @@ class CustomersListCard extends Component{
                                 anchorEl={this.state.currentAnchor}
                                 onClose={this.handlePopupClose}>
                                 <MenuItem>Edit</MenuItem>
-                                <MenuItem onClick={()=> this.setState({itemIsBeingDeleted:true})}>Delete</MenuItem>
+                                <MenuItem onClick={()=> this.setState({itemIsBeingDeleted:true, currentAnchor:undefined})}>Delete</MenuItem>
                             </Menu>)
                         }
                 </Card>
