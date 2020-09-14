@@ -64,8 +64,8 @@ class CustomerListItem extends Component{
                                 </Typography>
                             </Grid>
                         </Grid>
-                        <Grid item>
-                            <IconButton size="small" color="grey" aria-label="Edit" onClick={this.onMoreButtonPressed}>
+                        <Grid item xs={3}>
+                            <IconButton size="small" color="grey" aria-label="Edit" onClick={this.onMoreButtonPressed} style={{float:'right'}}>
                                 <MoreVertIcon />
                             </IconButton>
                         </Grid>
