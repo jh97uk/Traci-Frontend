@@ -22,7 +22,7 @@ import AddIcon from '@material-ui/icons/Add';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import AddCustomerDialog from './AddCustomerDialog.js';
+import AddEditCustomerDialog from './AddEditCustomerDialog.js';
 import CustomerListItem from './CustomerListItem.js';
 import SimpleAlertDialog from './SimpleAlertDialog.js';
 import Dialog from '@material-ui/core/Dialog';
@@ -187,9 +187,9 @@ class CustomersListCard extends Component{
         if(data){
             let customers = this.state.customers;
             customers.push(data.entry);
-            this.setState({showAddCustomerDialog:false, customers:customers});
+            this.setState({showAddEditCustomerDialog:false, customers:customers, popupMenuItemId:undefined, popupMenuItemIndex:undefined, currentItem:undefined});
         } else{
-            this.setState({showAddCustomerDialog:false});
+            this.setState({showAddEditCustomerDialog:false, popupMenuItemId:undefined, popupMenuItemIndex:undefined, currentItem:undefined});
         }
     }
 
@@ -198,7 +198,7 @@ class CustomersListCard extends Component{
     }
 
     handlePopupClose(event){
-        this.setState({currentAnchor:undefined});
+        this.setState({currentAnchor:undefined, popupMenuItemId:undefined, popupMenuItemIndex:undefined});
     }
 
     deleteEntryById(id, index){
@@ -240,7 +240,10 @@ class CustomersListCard extends Component{
                     inputRef={this.timePickerRef}
                     onChange={this.onTimePicked}
                     style={{display:'none'}}/>
-                <AddCustomerDialog open={this.state.showAddCustomerDialog} onClose={this.onAddCustomerDialogClosed}></AddCustomerDialog>
+                <AddEditCustomerDialog 
+                    open={this.state.showAddEditCustomerDialog} 
+                    onClose={this.onAddCustomerDialogClosed} 
+                    currentItem={this.state.currentItem}/>
                 <Card style={{position:'relative'}}>
                     <CardContent style={{paddingBottom:20}}>
                         <TextField
@@ -291,7 +294,7 @@ class CustomersListCard extends Component{
                             
                         </List>
                         <div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
-                            <Fab color="primary" aria-label="add" size="small" onClick={()=>this.setState({showAddCustomerDialog:true})}>
+                            <Fab color="primary" aria-label="add" size="small" onClick={()=>this.setState({showAddEditCustomerDialog:true})}>
                                 <AddIcon />
                             </Fab>
                         </div>
@@ -316,7 +319,7 @@ class CustomersListCard extends Component{
                                 open={true}
                                 anchorEl={this.state.currentAnchor}
                                 onClose={this.handlePopupClose}>
-                                <MenuItem>Edit</MenuItem>
+                                <MenuItem onClick={()=>this.setState({showAddEditCustomerDialog:true, currentItem:this.state.customers[0], currentAnchor:undefined})}>Edit</MenuItem>
                                 <MenuItem onClick={()=> this.setState({itemIsBeingDeleted:true, currentAnchor:undefined})}>Delete</MenuItem>
                             </Menu>)
                         }

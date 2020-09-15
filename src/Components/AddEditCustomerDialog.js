@@ -14,10 +14,16 @@ import { MuiThemeProvider, DialogTitle } from '@material-ui/core';
 
 import SimpleAlertDialog from '../Components/SimpleAlertDialog.js';
 
-class AddCustomerDialog extends Component{
+class AddEditCustomerDialog extends Component{
     constructor(props){
-        super()
+        super(props)
         this.defaultState = {phoneNumber:'', entryDate:new Date(), entryTime:new Date(), departureDate: new Date(), departureTime: new Date(), loading:false, error:false};
+        console.log(props);
+        if(props.currentItem){
+            const entryDate = new Date(Date.parse(this.props.currentItem.entryTimestamp));
+            const departureDate = new Date(Date.parse(this.props.currentItem.departureTimestamp));
+            this.defaultState = {phoneNumber:props.currentItem.phoneNumber, entryDate:entryDate, departureDate:departureDate, entryTime:entryDate, departureTime:departureDate}
+        }
         this.state = this.defaultState
 
         this.submitEntry = this.submitEntry.bind(this);
@@ -97,12 +103,17 @@ class AddCustomerDialog extends Component{
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description">
                         <DialogContent>
-                            <TextField label="Phone Number" style={{width:'100%', marginBottom:15}} value={this.state.phoneNumber} onChange={this.onPhoneNumberChanged} disabled={this.state.loading}/>
+                            <TextField 
+                                label="Phone Number" 
+                                style={{width:'100%', marginBottom:15}} 
+                                value={this.props.currentItem ? this.props.currentItem.phoneNumber : this.state.phoneNumber} 
+                                onChange={this.onPhoneNumberChanged} 
+                                disabled={this.state.loading}/>
                             <div style={{width:'100%', marginBottom:15}}>
                                 <DatePicker
                                     format='dd/MM/yy'
                                     label='Entry date'
-                                    value={this.state.entryDate}
+                                    value={this.props.currentItem ? new Date(Date.parse(this.props.currentItem.entryTimestamp)) : this.state.entryDate}
                                     onChange={this.onEntryDatePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
@@ -110,7 +121,7 @@ class AddCustomerDialog extends Component{
                                     clearable
                                     ampm={false}
                                     label="Entry time"
-                                    value={this.state.departureTime}
+                                    value={this.props.currentItem ? new Date(Date.parse(this.props.currentItem.entryTimestamp)) : this.state.departureTime}
                                     onChange={this.onEntryTimePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
@@ -120,7 +131,7 @@ class AddCustomerDialog extends Component{
                                 <DatePicker
                                     format='dd/MM/yy'
                                     label='Departure date'
-                                    value={this.state.departureDate}
+                                    value={this.props.currentItem ? new Date(Date.parse(this.props.currentItem.departureTimestamp)) : this.state.departureDate}
                                     onChange={this.onDepartureDatePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
@@ -128,7 +139,7 @@ class AddCustomerDialog extends Component{
                                     clearable
                                     ampm={false}
                                     label="Departure time"
-                                    value={this.state.departureTime}
+                                    value={this.props.currentItem ? new Date(Date.parse(this.props.currentItem.departureTimestamp)) : this.state.departureTime}
                                     onChange={this.onDepartureTimePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
@@ -147,7 +158,7 @@ class AddCustomerDialog extends Component{
                                     marginTop:-4
                                 }}></CircularProgress>
                                     :
-                                <Button color="primary" onClick={()=>this.submitEntry()} autoFocus>Add entry</Button>
+                            <Button color="primary" onClick={()=>this.submitEntry()} autoFocus>{this.props.currentItem ? "Save" : "Add entry" }</Button>
                             }
                             
                         </DialogActions>
@@ -157,4 +168,4 @@ class AddCustomerDialog extends Component{
     }
 }
 
-export default AddCustomerDialog;
+export default AddEditCustomerDialog;
