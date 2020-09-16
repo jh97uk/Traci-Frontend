@@ -17,13 +17,7 @@ import SimpleAlertDialog from '../Components/SimpleAlertDialog.js';
 class AddEditCustomerDialog extends Component{
     constructor(props){
         super(props)
-        this.defaultState = {phoneNumber:'', entryDate:new Date(), entryTime:new Date(), departureDate: new Date(), departureTime: new Date(), loading:false, error:false};
-        console.log(props);
-        if(props.currentItem){
-            const entryDate = new Date(Date.parse(this.props.currentItem.entryTimestamp));
-            const departureDate = new Date(Date.parse(this.props.currentItem.departureTimestamp));
-            this.defaultState = {phoneNumber:props.currentItem.phoneNumber, entryDate:entryDate, departureDate:departureDate, entryTime:entryDate, departureTime:departureDate}
-        }
+        this.defaultState = {phoneNumber:'', entryDate:new Date(), entryTime:new Date(), departureDate: new Date(), departureTime: new Date(), loading:false, error:false, edit:false};
         this.state = this.defaultState
 
         this.submitEntry = this.submitEntry.bind(this);
@@ -71,7 +65,7 @@ class AddEditCustomerDialog extends Component{
     setCurrentCustomerItem(customer){
         const entryDate = new Date(Date.parse(customer.entryTimestamp));
         const departureDate = new Date(Date.parse(customer.departureTimestamp));
-        this.setState({phoneNumber:customer.phoneNumber, entryDate:entryDate, departureDate:departureDate, entryTime:entryDate, departureTime:departureDate});
+        this.setState({phoneNumber:customer.phoneNumber, entryDate:entryDate, departureDate:departureDate, entryTime:entryDate, departureTime:departureDate, edit:true, currentItemId:customer.id});
     }
 
     submitEntry(){
@@ -110,14 +104,15 @@ class AddEditCustomerDialog extends Component{
         let departureTimestamp = this.createTimestamp(self.state.departureDate);
 
         self.setState({loading:true});
-        fetch('http://localhost:4000/customer/'+self.props.currentItem.id, {
+        console.log(this.state);
+        fetch('http://localhost:4000/customer/'+self.state.currentItemId, {
             method:'PATCH',
             headers:{
             'Content-Type': 'application/json',
             'Authorization': 'Bearer '+localStorage.getItem('token')
             },
             body:JSON.stringify({
-                number:self.state.phoneNumber,
+                phoneNumber:self.state.phoneNumber,
                 entryTimestamp:entryTimestamp,
                 departureTimestamp:departureTimestamp
             })
@@ -140,7 +135,10 @@ class AddEditCustomerDialog extends Component{
             <MuiThemeProvider>
                 <Dialog 
                     open={this.props.open}
-                    onClose={this.props.onClose}
+                    onClose={()=>{
+                        this.setState(this.defaultState);
+                        this.props.onClose()
+                    }}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description">
                         <DialogContent>
@@ -200,11 +198,12 @@ class AddEditCustomerDialog extends Component{
                                 }}></CircularProgress>
                                     :
                             <Button color="primary" onClick={()=>{
-                                if(this.props.currentItem)
+                                console.log(this.state);
+                                if(this.state.edit)
                                     this.editEntry()
                                     else
                                         this.submitEntry()
-                            }} autoFocus>{this.props.currentItem ? "Save" : "Add entry" }</Button>
+                            }} autoFocus>{this.state.edit ? "Save" : "Add entry" }</Button>
                             }
                             
                         </DialogActions>
