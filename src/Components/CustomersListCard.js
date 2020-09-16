@@ -52,6 +52,8 @@ class CustomersListCard extends Component{
         this.onMoreButtonPressed = this.onMoreButtonPressed.bind(this);
         this.handlePopupClose = this.handlePopupClose.bind(this);
         this.deleteEntryById = this.deleteEntryById.bind(this);
+
+        this.addEditCustomerDialog = React.createRef();
         this.currentEditngIndex = null;
     }
 
@@ -104,6 +106,7 @@ class CustomersListCard extends Component{
     }
 
     onTimePicked(date){
+        console.log('test');
         const self = this;
         self.setState({loading:true});
         fetch('http://localhost:4000/customer/'+this.currentEditngIndex, {
@@ -183,10 +186,16 @@ class CustomersListCard extends Component{
         this.initCustomers()
     }
 
-    onAddCustomerDialogClosed(data){
+    onAddCustomerDialogClosed(data, index){
+        console.log("editted");
         if(data){
             let customers = this.state.customers;
-            customers.push(data.entry);
+            if(!isNaN(index)){
+                console.log(customers)
+                customers[index] = data.entry;
+            } else{
+                customers.push(data.entry);
+            }
             this.setState({showAddEditCustomerDialog:false, customers:customers, popupMenuItemId:undefined, popupMenuItemIndex:undefined, currentItem:undefined});
         } else{
             this.setState({showAddEditCustomerDialog:false, popupMenuItemId:undefined, popupMenuItemIndex:undefined, currentItem:undefined});
@@ -243,7 +252,8 @@ class CustomersListCard extends Component{
                 <AddEditCustomerDialog 
                     open={this.state.showAddEditCustomerDialog} 
                     onClose={this.onAddCustomerDialogClosed} 
-                    currentItem={this.state.currentItem}/>
+                    ref={this.addEditCustomerDialog}
+                    currentItemIndex={this.state.currentItem ? this.state.customers.indexOf(this.state.currentItem) : undefined}/>
                 <Card style={{position:'relative'}}>
                     <CardContent style={{paddingBottom:20}}>
                         <TextField
@@ -319,7 +329,10 @@ class CustomersListCard extends Component{
                                 open={true}
                                 anchorEl={this.state.currentAnchor}
                                 onClose={this.handlePopupClose}>
-                                <MenuItem onClick={()=>this.setState({showAddEditCustomerDialog:true, currentItem:this.state.customers[0], currentAnchor:undefined})}>Edit</MenuItem>
+                                <MenuItem onClick={()=>{
+                                        this.setState({showAddEditCustomerDialog:true, currentItem:this.state.customers[this.state.popupMenuItemIndex], currentAnchor:undefined})
+                                        this.addEditCustomerDialog.current.setCurrentCustomerItem(this.state.customers[this.state.popupMenuItemIndex]);
+                                    }}>Edit</MenuItem>
                                 <MenuItem onClick={()=> this.setState({itemIsBeingDeleted:true, currentAnchor:undefined})}>Delete</MenuItem>
                             </Menu>)
                         }
