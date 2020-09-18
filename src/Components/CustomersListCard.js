@@ -40,7 +40,7 @@ class CustomersListCard extends Component{
         const maxDate = new Date();
         minDate.setHours(0, 0, 0, 0);
         maxDate.setHours(23, 59, 59, 0);
-        this.state = {customers:[], loading:true, searchFilters:{startDate: minDate, endDate: maxDate}}
+        this.state = {customers:[], loading:true, searchFilters:{startDate: minDate, endDate: maxDate}, searchOffset:0}
         this.timePickerRef = React.createRef()
         this.activateTimePicker = this.activateTimePicker.bind(this);
         this.onTimePicked = this.onTimePicked.bind(this);
@@ -75,7 +75,7 @@ class CustomersListCard extends Component{
             filters.value = "";
         self.setState({searchFilters:filters});
 
-        axios.get('customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate).then(function(response){
+        axios.get('customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate+"&offset="+this.state.searchFilters).then(function(response){
             const data = response.data;
             let stateUpdate = {customers:data, searchLoading:false};
             self.setState(stateUpdate);
@@ -143,12 +143,24 @@ class CustomersListCard extends Component{
         this.setState({searchLoading:true})
         axios.get('customer/').then(function(response){
             const data = response.data;
+            let customers = self.state.customers;
             let stateUpdate = {customers:data, loading:false, searchLoading:false}
             self.setState(stateUpdate);
             self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
         }).catch(function(error){
             console.log(error);
         })
+    }
+
+    getCustomersWithOffset(offset){
+        const self = this;
+        self.setState({searchLoading:true})
+        axios.get('customer/?offset='+offset).then(function(response){
+            const data = response.data;
+            let customers = self.state.customers.concat(data);
+            self.setState({customers:customers, searchLoading:false, loading:false});
+        }).catch(function(error){
+        });
     }
 
     componentDidMount(){
@@ -249,7 +261,7 @@ class CustomersListCard extends Component{
                             onChange={this.onEndDateSelected}
                             value={this.state.searchFilters.endDate}/>
                         <Button style={{width:'100%', marginTop:10, paddingBottom:0}} onClick={this.clearFilters}>CLEAR FILTERS</Button>
-                        <List style={{minHeight:50}}>
+                        <List style={{minHeight:50, maxHeight:200, overflow:'auto'}}>
                             { this.state.customers.length > 0 && this.state.customers.map((item, index)=>(
                                 <CustomerListItem 
                                     phoneNumber={item.phoneNumber} 
@@ -274,9 +286,13 @@ class CustomersListCard extends Component{
                                     alignItems:'center'}}>
                                 <CircularProgress></CircularProgress>
                             </div>}
-                            
+                            {this.state.customers.length >= 5 ? 
+                                <Button onClick={()=>this.getCustomersWithOffset(this.state.customers.length+1)} style={{width:'100%'}}>MORE</Button>
+                                :
+                                ''
+                            }
                         </List>
-                        <div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
+                        <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:15}}>
                             <Fab color="primary" aria-label="add" size="small" onClick={()=>this.setState({showAddEditCustomerDialog:true})}>
                                 <AddIcon />
                             </Fab>
