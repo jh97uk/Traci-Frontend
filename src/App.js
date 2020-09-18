@@ -3,6 +3,7 @@ import './App.css';
 import Kiosk from './Views/Kiosk.js';
 import Login from './Views/Login.js';
 import Dashboard from './Views/Dashboard.js';
+import axios from 'axios';
 
 import {
   BrowserRouter as Router,
@@ -14,6 +15,13 @@ import {
 class App extends Component{
   constructor(props){
     super();
+    axios.interceptors.request.use(function(config){
+      const token = localStorage.getItem("token");
+      config.headers.Authorization = "Bearer "+token;
+      console.log(config);
+      return config;
+    });
+    axios.defaults.baseURL = 'http://localhost:4000/'
   }
 
   render(){

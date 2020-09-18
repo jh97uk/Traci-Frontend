@@ -3,7 +3,7 @@ import QrReader from 'react-qr-reader';
 import UIfx from 'uifx';
 import successBeep from '../Media/success.mp3';
 import Checkmark from '../Checkmark.js';
-
+import axios from 'axios';
 
 const beep = new UIfx(successBeep);
 
@@ -36,18 +36,14 @@ class Kiosc extends Component{
     var token = localStorage.getItem('token');
     if(code && code != this.state.qrResult || (code && this.state.qrResult == code && this.state.lastScanTimestamp+(1000*30) <= new Date().getTime()) ){
       beep.play()
-      fetch('http://localhost:4000/customer/entry', {
-        method:'POST',
-        headers:{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+token
-        },
-        body:JSON.stringify({number:code})
+      axios.post('customer/entry', {
+        number:code
       }).then(function(response){
-        return response.json();
-      }).then(function(data){
+        const data = response.data;
         self.setState({qrResult:code, lastScanTimestamp:new Date().getTime(), scanned:true, scanType:data.type});
-      })
+      }).catch(function(error){
+        console.log(error);
+      });
     }
   }
 

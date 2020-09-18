@@ -12,6 +12,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Redirect } from 'react-router';
+import axios from 'axios';
+axios.defaults.baseURL = 'localhost:4000/';
+axios.defaults.headers.common = {'Authorization' : 'Bearer '+localStorage.getItem('token')}
+
 
 class Login extends Component{
     constructor(props){
@@ -19,37 +23,25 @@ class Login extends Component{
         this.state = {emailAddress:'', password:''};
         this.loginPressed = this.loginPressed.bind(this);
     }
-
-    componentDidMount(){
-    }
-
+    
     loginPressed(){
         const self = this;
         self.setState({loginInProgress:true})
-        fetch('http://localhost:4000/users/authenticate', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({username:self.state.emailAddress, password:self.state.password})
+        axios.post('users/authenticate',{
+            username:self.state.emailAddress, 
+            password:self.state.password
         }).then(function(response){
-            console.log(response);
-            if(response.status == 500){
-                return {status:500};
-            }
-            return response.json();
-        }).then(function(data){
-            
-            if(data.status == 500){
-                self.setState({
-                    loginInProgress:false, 
-                    showDialog:true,
-                    dialogTitle:"Invalid credentials",
-                    dialogContent:"Invalid username or password"})
-            } else{
-                localStorage.setItem('token', data.token);
-                self.setState({
-                    loginInProgress:false
-                });
-            }
+            const data = response.data;
+            localStorage.setItem('token', data.token);
+            self.setState({
+                loginInProgress:false
+            });
+        }).catch(function(error){
+            self.setState({
+                loginInProgress:false, 
+                showDialog:true,
+                dialogTitle:"Invalid credentials",
+                dialogContent:"Invalid username or password"})
         });
     }
     

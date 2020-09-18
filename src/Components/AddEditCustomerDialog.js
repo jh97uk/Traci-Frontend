@@ -13,6 +13,7 @@ import KeyboardDateInput from '@material-ui/pickers/_shared/KeyboardDateInput';
 import { MuiThemeProvider, DialogTitle } from '@material-ui/core';
 
 import SimpleAlertDialog from '../Components/SimpleAlertDialog.js';
+const axios = require('axios');
 
 class AddEditCustomerDialog extends Component{
     constructor(props){
@@ -75,27 +76,18 @@ class AddEditCustomerDialog extends Component{
         let departureTimestamp = this.createTimestamp(self.state.departureDate);
 
         self.setState({loading:true});
-        fetch('http://localhost:4000/customer/entry', {
-            method:'POST',
-            headers:{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+localStorage.getItem('token')
-            },
-            body:JSON.stringify({
-                number:self.state.phoneNumber,
-                entryTimestamp:entryTimestamp,
-                departureTimestamp:departureTimestamp
-            })
+        
+        axios.post('customer/entry', {
+            number:self.state.phoneNumber,
+            entryTimestamp:entryTimestamp,
+            departureTimestamp:departureTimestamp
         }).then(function(response){
-            return response.json();
-        }).then(function(data){
-            if(data.error){
-                self.setState({error:{title:'Something went wrong...', message:data.error}, loading:false});
-                return;
-            }
+            const data = response.data;
             self.setState(self.defaultState);
             self.props.onClose(data)
-        })
+        }).catch(function(error){
+            self.setState({error:{title:'Something went wrong...', message:error.response.data.error}, loading:false});
+        });
     }
 
     editEntry(){
@@ -104,29 +96,16 @@ class AddEditCustomerDialog extends Component{
         let departureTimestamp = this.createTimestamp(self.state.departureDate);
 
         self.setState({loading:true});
-        console.log(this.state);
-        fetch('http://localhost:4000/customer/'+self.state.currentItemId, {
-            method:'PATCH',
-            headers:{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+localStorage.getItem('token')
-            },
-            body:JSON.stringify({
-                phoneNumber:self.state.phoneNumber,
-                entryTimestamp:entryTimestamp,
-                departureTimestamp:departureTimestamp
-            })
+        axios.patch('customer/'+self.state.currentItemId, {
+            phoneNumber:self.state.phoneNumber,
+            entryTimestamp:entryTimestamp,
+            departureTimestamp:departureTimestamp
         }).then(function(response){
-            return response.json();
-        }).then(function(data){
-            if(data.error){
-                self.setState({error:{title:'Something went wrong...', message:data.error}, loading:false});
-                return;
-            }
+            const data = response.data;
             self.setState(self.defaultState);
-            console.log(data);
-            console.log(self.props);
             self.props.onClose(data, self.props.currentItemIndex)
+        }).catch(function(error){
+            self.setState({error:{title:'Something went wrong...', message:error.response.data.error}, loading:false});
         })
     }
 
@@ -198,7 +177,6 @@ class AddEditCustomerDialog extends Component{
                                 }}></CircularProgress>
                                     :
                             <Button color="primary" onClick={()=>{
-                                console.log(this.state);
                                 if(this.state.edit)
                                     this.editEntry()
                                     else

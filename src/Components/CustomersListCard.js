@@ -31,6 +31,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 
 import {DialogTitle} from '@material-ui/core';
 
+const axios = require('axios');
+
 class CustomersListCard extends Component{
     constructor(props){
         super(props);
@@ -72,19 +74,13 @@ class CustomersListCard extends Component{
         if(filters.value == undefined || filters.value == null)
             filters.value = "";
         self.setState({searchFilters:filters});
-        console.log(filters);
-        fetch('http://localhost:4000/customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate, {
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            }
-            }).then(function(response){
-                return response.json();
-            }).then(function(data){
-                let stateUpdate = {customers:data, searchLoading:false};
-                self.setState(stateUpdate);
-            })
+
+        axios.get('customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate).then(function(response){
+            const data = response.data;
+            let stateUpdate = {customers:data, searchLoading:false};
+            self.setState(stateUpdate);
+        }).catch(function(error){
+        });
     }
     activateTimePicker(index){
         this.currentEditngIndex = index;
@@ -109,36 +105,25 @@ class CustomersListCard extends Component{
         console.log('test');
         const self = this;
         self.setState({loading:true});
-        fetch('http://localhost:4000/customer/'+this.currentEditngIndex, {
-            method:"PATCH",
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            },
-            body:JSON.stringify({departureTimestamp:date})
+
+        axios.patch('customer/'+this.currentEditngIndex,{
+            data:{departureTimestamp:date}
         }).then(function(response){
-            return response.json();
-        }).then(function(data){
-            console.log(data);
-            fetch('http://localhost:4000/customer/'+self.currentEditngIndex, {
-                method:'GET',
-                headers:{
-                    'Content-Type':'application/json',
-                    'Authorization': 'Bearer '+localStorage.getItem('token')
-                }
-                }).then(function(response){
-                    return response.json();
-                }).then(function(data){
-                    self.state.customers.forEach(customer => {
-                        if(customer.id == self.currentEditngIndex){
-                            const updatedCustomerArray = self.state.customers;
-                            const id = self.state.customers.indexOf(customer)
-                            updatedCustomerArray[id] = {...updatedCustomerArray[id], ...data[0]}
-                            self.setState({customers:updatedCustomerArray, loading:false})
-                            self.props.customerCountSetter(updatedCustomerArray.length, self.getActiveCustomerCount());
-                        }
-                    });
-                })
+            const data = response;
+            axios.get("http://localhost:4000/customer"+self.currentEditngIndex).then(function(response){
+                const data = response;
+                self.state.customers.forEach(customer => {
+                    if(customer.id == self.currentEditngIndex){
+                        const updatedCustomerArray = self.state.customers;
+                        const id = self.state.customers.indexOf(customer)
+                        updatedCustomerArray[id] = {...updatedCustomerArray[id], ...data[0]}
+                        self.setState({customers:updatedCustomerArray, loading:false})
+                        self.props.customerCountSetter(updatedCustomerArray.length, self.getActiveCustomerCount());
+                    }
+                });
+            });
+        }).catch(function(error){
+
         });
     }
 
@@ -156,19 +141,14 @@ class CustomersListCard extends Component{
     initCustomers(){
         const self = this;
         this.setState({searchLoading:true})
-        fetch('http://localhost:4000/customer/', {
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            }
-            }).then(function(response){
-                return response.json();
-            }).then(function(data){
-                let stateUpdate = {customers:data, loading:false, searchLoading:false}
-                self.setState(stateUpdate);
-                self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
-            })
+        axios.get('customer/').then(function(response){
+            const data = response.data;
+            let stateUpdate = {customers:data, loading:false, searchLoading:false}
+            self.setState(stateUpdate);
+            self.props.customerCountSetter(data.length, self.getActiveCustomerCount());
+        }).catch(function(error){
+            console.log(error);
+        })
     }
 
     componentDidMount(){
@@ -212,23 +192,16 @@ class CustomersListCard extends Component{
 
     deleteEntryById(id, index){
         const self = this;
-        fetch('http://localhost:4000/customer/'+id, {
-            method:'DELETE',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            }
-            }).then(function(response){
-                return response.json();
-            }).then(function(data){
-                let customers = self.state.customers;
-                customers.splice(index, 1);
-                self.setState({itemIsBeingDeleted:false, customers:customers, currentAnchor:undefined});
-            })
+        axios.delete('customer/'+id).then(function(response){
+            const data = response.data;
+            let customers = self.state.customers;
+            customers.splice(index, 1);
+            self.setState({itemIsBeingDeleted:false, customers:customers, currentAnchor:undefined});
+        }).catch(function(error){
+        });
     }
 
-    render(){
-        console.log(this.state);    
+    render(){ 
         return(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 {this.state.itemIsBeingDeleted &&
