@@ -75,7 +75,7 @@ class CustomersListCard extends Component{
             filters.value = "";
         self.setState({searchFilters:filters});
 
-        axios.get('customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate+"&offset="+this.state.searchFilters).then(function(response){
+        axios.get('customer/search/'+filters.value+"?startDate="+filters.startDate+"&endDate="+filters.endDate+"&offset="+this.state.searchOffset).then(function(response){
             const data = response.data;
             let stateUpdate = {customers:data, searchLoading:false};
             self.setState(stateUpdate);
