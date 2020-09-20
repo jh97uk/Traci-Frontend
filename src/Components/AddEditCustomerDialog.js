@@ -24,10 +24,7 @@ class AddEditCustomerDialog extends Component{
         this.submitEntry = this.submitEntry.bind(this);
         
         this.onEntryDatePicked = this.onEntryDatePicked.bind(this);
-        this.onEntryTimePicked = this.onEntryTimePicked.bind(this);
-
         this.onDepartureDatePicked = this.onDepartureDatePicked.bind(this);
-        this.onDepartureTimePicked = this.onDepartureTimePicked.bind(this);
 
         this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
         this.createTimestamp = this.createTimestamp.bind(this);
@@ -38,17 +35,9 @@ class AddEditCustomerDialog extends Component{
     onEntryDatePicked(date){
         this.setState({entryDate:date});
     }
-    
-    onEntryTimePicked(time){
-        this.setState({entryTime:time});
-    }
 
     onDepartureDatePicked(date){
         this.setState({departureDate:date});
-    }
-
-    onDepartureTimePicked(time){
-        this.setState({departureTime:time});
     }
 
     onPhoneNumberChanged(event){
@@ -139,8 +128,8 @@ class AddEditCustomerDialog extends Component{
                                     clearable
                                     ampm={false}
                                     label="Entry time"
-                                    value={this.state.departureTime}
-                                    onChange={this.onEntryTimePicked}
+                                    value={this.state.entryDate}
+                                    onChange={this.onEntryDatePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
                             </div>
@@ -157,8 +146,8 @@ class AddEditCustomerDialog extends Component{
                                     clearable
                                     ampm={false}
                                     label="Departure time"
-                                    value={this.state.departureTime}
-                                    onChange={this.onDepartureTimePicked}
+                                    value={this.state.departureDate}
+                                    onChange={this.onDepartureDatePicked}
                                     style={{width:'50%'}}
                                     disabled={this.state.loading}/>
                             </div>
