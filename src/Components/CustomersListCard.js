@@ -19,7 +19,7 @@ import { Typography } from '@material-ui/core';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditCustomerDialog from './AddEditCustomerDialog.js';
@@ -293,6 +293,12 @@ class CustomersListCard extends Component{
                             }
                         </List>
                         <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:15}}>
+                            <Fab color="primary" aria-label="add" size="small" onClick={()=>{
+                                this.clearFilters();
+                                this.initCustomers();
+                            }} style={{marginRight:15}}>
+                                <RefreshIcon />
+                            </Fab>
                             <Fab color="primary" aria-label="add" size="small" onClick={()=>this.setState({showAddEditCustomerDialog:true})}>
                                 <AddIcon />
                             </Fab>
