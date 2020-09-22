@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { grey } from '@material-ui/core/colors';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import Settings from '@material-ui/icons/Settings';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -25,6 +26,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DashboardLanding from './DashboardLanding.js';
+import DashboardSettings from './DashboardSettings.js';
+import { useHistory } from "react-router-dom";
 
 class Dashboard extends Component{
     constructor(props){
@@ -98,10 +101,6 @@ class Dashboard extends Component{
             </IconButton>
         </MenuItem>)
 
-        const logoutRedirect = {
-
-        }
-
         return(
             <div style={style.container}>
                 <AppBar position="static">
@@ -128,17 +127,24 @@ class Dashboard extends Component{
                             backgroundColor:grey[100]
                         }}>
                             <List component='nav' aria-label="dashboard">
-                                <ListItem button>
+                                <ListItem button onClick={()=>this.props.history.push('/dashboard')}>
                                     <ListItemIcon>
                                         <DashboardIcon/>
                                     </ListItemIcon>
                                     <ListItemText primary="Dashboard"/>
+                                </ListItem>
+                                <ListItem button onClick={()=>this.props.history.push('/dashboard/settings')}>
+                                    <ListItemIcon>
+                                        <Settings/>
+                                    </ListItemIcon>
+                                    <ListItemText primary="Settings"/>
                                 </ListItem>
                             </List>
                         </Paper>
                     </Box>
                     <Grid item xs={12} sm={8} md={9} lg={10}>
                         <Route exact path={this.props.match.path} component={DashboardLanding}/>
+                        <Route path={this.props.match.path+'/settings'} render={(props)=><DashboardSettings {...props}/>}/>
                     </Grid>
                     <Dialog
                         open={this.state.showDialog}
