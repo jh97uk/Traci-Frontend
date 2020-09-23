@@ -8,6 +8,10 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+
 class DashboardSettings extends Component{
     constructor(props){
         super(props);
@@ -23,7 +27,13 @@ class DashboardSettings extends Component{
     }
 
     clearDatabase(){
+        const self = this;
+        self.setState({loading:true});
+        axios.delete('/customer', {}).then(function(response){
+            self.setState({loading:false, clearDatabaseWarningShow:false});
+        }).catch(function(error){
 
+        });
     }
 
     saveSettings(){
@@ -38,7 +48,7 @@ class DashboardSettings extends Component{
 
     render(){
         return(
-            <div style={{padding:20}}>
+            <div>
                 <Card>
                     <CardContent>
                         <Typography variant="h4">SETTINGS</Typography>
@@ -49,10 +59,38 @@ class DashboardSettings extends Component{
                                 value={this.state.passwordValue}
                                 onChange={this.onPasswordFieldChange} 
                                 disabled={this.state.loading}/>
-                        <Button onClick={this.clearDatabase}>CLEAR DATABASE</Button>
-                        <Button onClick={this.saveSettings}>SAVE</Button>
+                        <Button onClick={()=>this.setState({clearDatabaseWarningShow:true})} style={{width:'100%'}}>CLEAR DATABASE</Button>
+                        <Button onClick={this.saveSettings} variant="contained" color="primary" style={{marginTop:10}}>SAVE</Button>
                     </CardContent>
                 </Card>
+
+                <Dialog 
+                    open={this.state.clearDatabaseWarningShow}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description">
+                        <DialogContent>
+                            <Typography variant="h4">Are you sure?</Typography>
+                            <p>Are you sure you want to clear the database? All the entries will be DELETED.</p>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={()=>{
+                                    this.setState({clearDatabaseWarningShow:false})
+                                }}>Cancel</Button>
+                            {this.state.loading ? 
+                                <CircularProgress style={{
+                                    width:20,
+                                    height:20,
+                                    marginRight:10,
+                                    marginTop:-4
+                                }}></CircularProgress>
+                                    :
+                            <Button color="primary" onClick={()=>{
+                                this.clearDatabase();
+                            }} autoFocus>{this.state.edit ? "Save" : "Add entry" }</Button>
+                            }
+                            
+                        </DialogActions>
+                </Dialog>
             </div>)
     }
 }
