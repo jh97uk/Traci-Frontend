@@ -48,7 +48,7 @@ class DashboardSettings extends Component{
 
     render(){
         return(
-            <div>
+            <div style={{padding:20}}>
                 <Card>
                     <CardContent>
                         <Typography variant="h4">SETTINGS</Typography>
@@ -60,7 +60,9 @@ class DashboardSettings extends Component{
                                 onChange={this.onPasswordFieldChange} 
                                 disabled={this.state.loading}/>
                         <Button onClick={()=>this.setState({clearDatabaseWarningShow:true})} style={{width:'100%'}}>CLEAR DATABASE</Button>
-                        <Button onClick={this.saveSettings} variant="contained" color="primary" style={{marginTop:10}}>SAVE</Button>
+                        <div style={{display:'flex', width:'100%', marginTop:10, justifyContent: 'right'}}>
+                            <Button onClick={this.saveSettings} variant="contained" color="primary">SAVE</Button>
+                        </div>
                     </CardContent>
                 </Card>
 
