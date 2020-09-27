@@ -32,17 +32,13 @@ class SetupWizard extends Component{
         this.setStage = this.setStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
         this.setNextAction = this.setNextAction.bind(this);
-    }
-
-    componentDidMount(){
-        const self = this;
+        this.getCurrentStage = this.getCurrentStage.bind(this);
+        this.getTotalStageCount = this.getTotalStageCount.bind(this);
     }
 
     setStage(stageNumber){
         const stageNames = Object.keys(stages);
         this.props.history.push('/setup/'+stageNames[stageNumber]);
-        console.log("set called")
-
     }
 
     nextStage(){
@@ -58,8 +54,15 @@ class SetupWizard extends Component{
     }
 
     setNextAction(func){
-        console.log("setting action")
         this.setState({nextAction:func});
+    }
+
+    getCurrentStage(){
+        return stages[this.props.location.pathname.split('/')[2]];
+    }
+    
+    getTotalStageCount(){
+        return Object.keys(stages).length;
     }
 
     render(){
@@ -86,9 +89,9 @@ class SetupWizard extends Component{
                         <Route path={this.props.match.path+'/'+stageRouteNames[2]} render={(props)=><SetupWizardComplete {...props} setOnNext={this.setNextAction}/>}/>
                     </div>
                     <div style={{display:'flex', justifyContent: 'right', padding:10}}>
-                        <label style={{marginRight:10, alignSelf:'center'}}>{stages[this.props.location.pathname.split('/')[2]]} of {Object.keys(stages).length}</label>
+                        <label style={{marginRight:10, alignSelf:'center'}}>{this.getCurrentStage()} of {this.getTotalStageCount()}</label>
                         <Button variant="contained" color="primary" onClick={this.nextStage} disabled={this.state.loading}>
-                            {this.state.loading ? <CircularProgress style={{height:25, width:25}}/> : "NEXT"}
+                            {this.state.loading ? <CircularProgress style={{height:25, width:25}}/> : ((this.getCurrentStage() == this.getTotalStageCount()) ? 'Finish' : 'NEXT')}
                         </Button>
                     </div>
                 </div>
