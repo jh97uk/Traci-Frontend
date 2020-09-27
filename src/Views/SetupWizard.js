@@ -17,6 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import SetupWizardWelcome from './SetupWizardWelcome.js';
 import SetupWizardConfigureAdmin from './SetupWizardConfigureAdmin.js';
 import SetupWizardComplete from './SetupWizardComplete.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const stages = {
     'welcome':1,
@@ -27,7 +28,7 @@ const stages = {
 class SetupWizard extends Component{
     constructor(props){
         super(props);
-        this.state = {}
+        this.state = {loading:false}
         this.setStage = this.setStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
         this.setNextAction = this.setNextAction.bind(this);
@@ -45,11 +46,15 @@ class SetupWizard extends Component{
     }
 
     nextStage(){
-        console.log(this.state);
-        this.state.nextAction();
-        this.setStage(stages[this.props.location.pathname.split('/')[2]]);
-        console.log("Next called")
-
+        const self = this;
+        if(this.state.nextAction){
+            this.setState({loading:true})
+            this.state.nextAction().then(function(){
+                self.setState({loading:false})
+                self.setStage(stages[self.props.location.pathname.split('/')[2]]);
+            })
+        } else
+            this.setStage(stages[this.props.location.pathname.split('/')[2]]);
     }
 
     setNextAction(func){
@@ -82,7 +87,9 @@ class SetupWizard extends Component{
                     </div>
                     <div style={{display:'flex', justifyContent: 'right', padding:10}}>
                         <label style={{marginRight:10, alignSelf:'center'}}>{stages[this.props.location.pathname.split('/')[2]]} of {Object.keys(stages).length}</label>
-                        <Button variant="contained" color="primary" onClick={this.nextStage}>NEXT</Button>
+                        <Button variant="contained" color="primary" onClick={this.nextStage} disabled={this.state.loading}>
+                            {this.state.loading ? <CircularProgress style={{height:25, width:25}}/> : "NEXT"}
+                        </Button>
                     </div>
                 </div>
             </div>

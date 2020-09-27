@@ -16,6 +16,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Card, CardContent } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import axios from 'axios';
 
 class SetupWizardConfigureAdmin extends Component{
     constructor(props){
@@ -26,9 +27,14 @@ class SetupWizardConfigureAdmin extends Component{
 
     componentDidMount(){
         const self = this;
-        this.props.setOnNext(function(){
-            alert();
-        })
+        const setPassword = async function(){
+            await axios.patch('/users',{
+                password:self.state.passwordValue
+            }).then(function(response){
+            }).catch(function(error){
+            });
+        }
+        this.props.setOnNext(setPassword)
     }
 
     onPasswordFieldChange(event){
