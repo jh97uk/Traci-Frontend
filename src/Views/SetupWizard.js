@@ -34,6 +34,7 @@ class SetupWizard extends Component{
         this.setNextAction = this.setNextAction.bind(this);
         this.getCurrentStage = this.getCurrentStage.bind(this);
         this.getTotalStageCount = this.getTotalStageCount.bind(this);
+        this.setLoading = this.setLoading.bind(this);
     }
 
     setStage(stageNumber){
@@ -41,13 +42,20 @@ class SetupWizard extends Component{
         this.props.history.push('/setup/'+stageNames[stageNumber]);
     }
 
+    setLoading(loading){
+        this.setState({loading:loading});
+    }
+
     nextStage(){
         const self = this;
         if(this.state.nextAction){
             this.setState({loading:true})
             this.state.nextAction().then(function(){
-                self.setState({loading:false})
+                self.setState({loading:false, nextAction:undefined})
                 self.setStage(stages[self.props.location.pathname.split('/')[2]]);
+            }).catch(function(error){
+                self.setState({loading:false})
+                self.props.setSimpleAlert("Something went wrong...", error.response.data.message);
             })
         } else
             this.setStage(stages[this.props.location.pathname.split('/')[2]]);
@@ -84,9 +92,9 @@ class SetupWizard extends Component{
                 </AppBar>
                 <div style={{display:'flex', flex: "1", flexDirection:"column"}}>
                     <div xs={12} style={{flexBasis:0, flexGrow:2,}}>
-                        <Route path={this.props.match.path+'/'+stageRouteNames[0]} render={(props)=><SetupWizardWelcome {...props} setOnNext={this.setNextAction}/>}/>
-                        <Route path={this.props.match.path+'/'+stageRouteNames[1]} render={(props)=><SetupWizardConfigureAdmin {...props} setOnNext={this.setNextAction}/>}/>
-                        <Route path={this.props.match.path+'/'+stageRouteNames[2]} render={(props)=><SetupWizardComplete {...props} setOnNext={this.setNextAction}/>}/>
+                        <Route path={this.props.match.path+'/'+stageRouteNames[0]} render={(props)=><SetupWizardWelcome {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
+                        <Route path={this.props.match.path+'/'+stageRouteNames[1]} render={(props)=><SetupWizardConfigureAdmin {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
+                        <Route path={this.props.match.path+'/'+stageRouteNames[2]} render={(props)=><SetupWizardComplete {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
                     </div>
                     <div style={{display:'flex', justifyContent: 'right', padding:10}}>
                         <label style={{marginRight:10, alignSelf:'center'}}>{this.getCurrentStage()} of {this.getTotalStageCount()}</label>

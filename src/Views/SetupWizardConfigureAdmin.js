@@ -1,18 +1,5 @@
 import React, {Component} from 'react';
-import {Route, Redirect} from 'react-router-dom';
-import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { Toolbar } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { Card, CardContent } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
@@ -31,8 +18,7 @@ class SetupWizardConfigureAdmin extends Component{
             await axios.patch('/users',{
                 password:self.state.passwordValue
             }).then(function(response){
-            }).catch(function(error){
-            });
+            })
         }
         this.props.setOnNext(setPassword)
     }
