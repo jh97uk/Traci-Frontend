@@ -10,7 +10,7 @@ class SetupWizardComplete extends Component{
     }
 
     componentDidMount(){
-        const self = this;
+        this.props.setOnNext(undefined);
     }
 
     render(){

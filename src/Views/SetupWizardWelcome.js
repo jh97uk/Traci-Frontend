@@ -7,6 +7,10 @@ class SetupWizardWelcome extends Component{
     constructor(props){
         super(props);
     }
+    
+    componentDidMount(){
+        this.props.setOnNext(undefined);
+    }
 
     render(){
         console.log('test');
