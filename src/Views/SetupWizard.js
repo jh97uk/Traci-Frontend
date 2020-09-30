@@ -82,6 +82,9 @@ class SetupWizard extends Component{
             }
         }  
         const stageRouteNames = Object.keys(stages);
+        if(!stageRouteNames.includes(this.props.location.pathname.split('/')[2])){
+            return <Redirect to={"/setup/welcome"} />
+        }
         return(
             <div style={style.container}>
                 <AppBar position="static">
