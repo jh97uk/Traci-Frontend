@@ -57,8 +57,14 @@ class SetupWizard extends Component{
                 self.setState({loading:false})
                 self.props.setSimpleAlert("Something went wrong...", error.response.data.message);
             })
-        } else
-            this.setStage(stages[this.props.location.pathname.split('/')[2]]);
+        } else{
+            if(this.getCurrentStage() == this.getTotalStageCount()){
+                this.props.history.push('/login');
+            } else{
+                this.setStage(stages[this.props.location.pathname.split('/')[2]]);
+            }
+        }
+            
     }
 
     setNextAction(func){
