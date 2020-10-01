@@ -16,11 +16,10 @@ import {
 class App extends Component{
   constructor(props){
     super();
-    this.state = {error:false};
+    this.state = {error:false, setup:true};
     axios.interceptors.request.use(function(config){
       const token = localStorage.getItem("token");
       config.headers.Authorization = "Bearer "+token;
-      console.log(config);
       return config;
     });
     this.onError = this.onError.bind(this);
@@ -36,6 +35,14 @@ class App extends Component{
     });
   }
 
+  componentDidMount(){
+    const self = this;
+    axios.get('/setup').then(function(response){
+      if(response.data.status == "setup-required")
+        self.setState({setup:false});
+    })
+  }
+
   render(){
     return (
       <div className="appContainer">
@@ -46,6 +53,7 @@ class App extends Component{
             <Route path='/setup' render={(props)=><SetupWizard {...props} setSimpleAlert={this.onError}/>}/>
             <Route path="/" render={(props)=><Kiosk {...props} setSimpleAlert={this.onError}/>}/>
           </Switch>
+          {this.state.setup ? '' : <Redirect to='/setup'/>}
         </Router>
         <SimpleAlertDialog title={this.state.error.title} message={this.state.error.message} show={this.state.error} onClose={()=>this.setState({error:false})}/>
       </div>
