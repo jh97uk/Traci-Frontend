@@ -16,13 +16,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import SetupWizardWelcome from './SetupWizardWelcome.js';
 import SetupWizardConfigureAdmin from './SetupWizardConfigureAdmin.js';
+import SetupWizardConfigureEstablishment from './SetupWizardConfigureEstablishment.js';
 import SetupWizardComplete from './SetupWizardComplete.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const stages = {
     'welcome':1,
     'configure-admin':2,
-    'setup-complete':3
+    'configure-establishment':3,
+    'setup-complete':4
 };
 
 class SetupWizard extends Component{
@@ -103,7 +105,8 @@ class SetupWizard extends Component{
                     <div xs={12} style={{flexBasis:0, flexGrow:2,}}>
                         <Route path={this.props.match.path+'/'+stageRouteNames[0]} render={(props)=><SetupWizardWelcome {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
                         <Route path={this.props.match.path+'/'+stageRouteNames[1]} render={(props)=><SetupWizardConfigureAdmin {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
-                        <Route path={this.props.match.path+'/'+stageRouteNames[2]} render={(props)=><SetupWizardComplete {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
+                        <Route path={this.props.match.path+'/'+stageRouteNames[2]} render={(props)=><SetupWizardConfigureEstablishment {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
+                        <Route path={this.props.match.path+'/'+stageRouteNames[3]} render={(props)=><SetupWizardComplete {...props} setOnNext={this.setNextAction} setLoading={this.setLoading} setSimpleAlert={this.props.setSimpleAlert}/>}/>
                     </div>
                     <div style={{display:'flex', justifyContent: 'right', padding:10}}>
                         <label style={{marginRight:10, alignSelf:'center'}}>{this.getCurrentStage()} of {this.getTotalStageCount()}</label>

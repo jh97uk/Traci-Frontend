@@ -28,7 +28,12 @@ class Kiosc extends Component{
   }
 
   componentDidMount(){
-    console.log(this.childRef);
+    const self = this;
+    axios.get('/kiosk').then(function(response){
+      const data = response.data;
+      self.setState({establishmentName:data.establishment.name, establishmentMessage:data.establishment.message});
+      console.log(self.state);
+    })
   }
   
   onCodeScanned(code){
@@ -57,10 +62,10 @@ class Kiosc extends Component{
     return (
       <div className="App">
         <header className="App-header">
-          <h1>Welcome to The Establishments Arms</h1>
+        <h1>Welcome to {this.state.establishmentName ? this.state.establishmentName : ''}</h1>
           {!this.state.scanned ? (
             <div>
-              <p>Help us aid the track and trace effort by showing this kiosc the barcode provided by the Traci app</p>
+              <p>{this.state.establishmentMessage ? this.state.establishmentMessage : ''}</p>
               <QrReader
                 delay={50}
                 onError={function(error){
