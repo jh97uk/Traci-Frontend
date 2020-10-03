@@ -19,11 +19,43 @@ class DashboardSettings extends Component{
         this.onPasswordFieldChange = this.onPasswordFieldChange.bind(this);
         this.clearDatabase = this.clearDatabase.bind(this);
         this.saveSettings = this.saveSettings.bind(this);
+        this.onEstablishmentNameChange = this.onEstablishmentNameChange.bind(this);
+        this.onEstablishmentMessageChange = this.onEstablishmentMessageChange.bind(this);
+        this.saveEstablishmentSettings = this.saveEstablishmentSettings.bind(this);
+    }
+
+    onEstablishmentNameChange(event){
+        const value = event.target.value;
+        this.setState({establishmentName:value});
+    }
+
+    onEstablishmentMessageChange(event){
+        const value = event.target.value;
+        this.setState({establishmentMessage:value});
     }
 
     onPasswordFieldChange(event){
         const value = event.target.value;
         this.setState({passwordValue:value});
+    }
+
+    saveEstablishmentSettings(){
+        const self = this;
+        self.setState({loading:true});
+        axios.patch('/setup/establishment',{
+            establishmentName:self.state.establishmentName,
+            establishmentMessage:self.state.establishmentMessage
+        }).then(function(response){
+            self.setState({loading:false});
+        })
+    }
+
+    componentDidMount(){
+        const self = this;
+        axios.get('/kiosk').then(function(response){
+            const data = response.data;
+            self.setState({establishmentName:data.establishment.name, establishmentMessage:data.establishment.message});
+          })
     }
 
     clearDatabase(){
@@ -43,6 +75,7 @@ class DashboardSettings extends Component{
         }).then(function(response){
             console.log(response);
         }).catch(function(error){
+            self.props.setSimpleAlert("Something went wrong...", error.response.data.message);
         });
     }
 
@@ -51,7 +84,7 @@ class DashboardSettings extends Component{
             <div style={{padding:20}}>
                 <Card>
                     <CardContent>
-                        <Typography variant="h4">SETTINGS</Typography>
+                        <Typography variant="h4">ADMIN SETTINGS</Typography>
                         <TextField 
                                 label="Dashboard password"
                                 type="password" 
@@ -62,6 +95,29 @@ class DashboardSettings extends Component{
                         <Button onClick={()=>this.setState({clearDatabaseWarningShow:true})} style={{width:'100%'}}>CLEAR DATABASE</Button>
                         <div style={{display:'flex', width:'100%', marginTop:10, justifyContent: 'right'}}>
                             <Button onClick={this.saveSettings} variant="contained" color="primary">SAVE</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card style={{marginTop:15}}>
+                    <CardContent>
+                        <Typography variant="h4">KIOSK SETTINGS</Typography>
+                        <TextField 
+                            label="Establishment name"
+                            style={{width:'100%', marginBottom:15}}
+                            defaultValue=" "
+                            value={this.state.establishmentName}
+                            onChange={this.onEstablishmentNameChange} 
+                            disabled={this.state.loading}/>
+                        <TextField 
+                            label="Establishment message"
+                            style={{width:'100%', marginBottom:15}} 
+                            defaultValue=" "
+                            value={this.state.establishmentMessage}
+                            onChange={this.onEstablishmentMessageChange} 
+                            disabled={this.state.loading}/>
+                        <div style={{display:'flex', width:'100%', marginTop:10, justifyContent: 'right'}}>
+                            <Button onClick={this.saveEstablishmentSettings} variant="contained" color="primary">SAVE</Button>
                         </div>
                     </CardContent>
                 </Card>
